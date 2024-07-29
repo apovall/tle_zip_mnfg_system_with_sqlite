@@ -28,13 +28,15 @@ let win: BrowserWindow | null
 
 function createWindow() {
   win = new BrowserWindow({
+    width: 1920,
+    height: 1080,
     icon: path.join(process.env.VITE_PUBLIC, 'logo.svg'),
     webPreferences: {
       preload: path.join(__dirname, './preload.js'),
       nodeIntegrationInWorker: true,
       contextIsolation: false,
       nodeIntegration: true,
-      webSecurity: false, // Allow Ajax cross
+      webSecurity: true, // Allow Ajax cross
     },
   })
 
@@ -45,7 +47,7 @@ function createWindow() {
 
   if (process.env.VITE_DEV_SERVER_URL) {
     win.loadURL(process.env.VITE_DEV_SERVER_URL)
-    win.webContents.openDevTools()
+    // win.webContents.openDevTools()
   } else {
     // win.loadFile('dist/index.html')
     win.loadFile(path.join(process.env.DIST, 'index.html'))

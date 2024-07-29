@@ -13,7 +13,7 @@ function ActionSelector({
 
   return (
     <div
-      className={`w-[500px] h-[500px] ${bgColour} flex flex-row justify-center mx-20 cursor-pointer hover:scale-105 transition-transform`}
+      className={`w-[500px] h-[500px] ${bgColour} flex flex-row justify-center mx-20 cursor-pointer hover:scale-105 transition-transform hover:rounded-xl`}
       onClick={() => {
         systemContext.setPageNumber(0)
         systemContext.setActiveJob(type)
