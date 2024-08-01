@@ -1,7 +1,6 @@
 import { Dispatch, SetStateAction } from 'react'
 
 interface JobDetails {
-  staffName: string | undefined,
   batchNumber: string | undefined,
   resistorLoaded: number | undefined
 }

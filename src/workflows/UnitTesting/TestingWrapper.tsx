@@ -1,5 +1,6 @@
-import {  useContext, useState } from 'react'
+import {  useContext, useEffect, useState } from 'react'
 import TextInput from "../../components/shared/TextInput"
+import ResistorSelect from '../../components/shared/ResistorSelect'
 import QRCodeInput from "../../components/shared/QRCodeInput"
 import NextButton from "../../components/shared/NextButton"
 import BackButton from '../../components/shared/BackButton'
@@ -8,7 +9,6 @@ import { SystemContext } from '../../context/SystemContext';
 import TestFeedbackWrapper from './TestFeedbackWrapper'
 
 interface JobDetails {
-  staffName: string | undefined,
   batchNumber: string | undefined,
   resistorLoaded: number | undefined
 }
@@ -22,7 +22,6 @@ function TestingWrapper() {
 
   const {pageNumber} = useContext(SystemContext);
   const [jobDetails, setJobDetails] = useState<JobDetails>({
-    "staffName": undefined,
     "batchNumber": undefined,
     "resistorLoaded": undefined
   })
@@ -34,9 +33,8 @@ function TestingWrapper() {
     case 0:
       componentBlock = (
         <>
-
           <TextInput label="Batch Name / Number" setInputValues={setJobDetails} target="batchNumber" value={jobDetails["batchNumber"]}/>
-          <TextInput label="Resistor Value Loaded" setInputValues={setJobDetails} target="resistorLoaded" value={jobDetails["resistorLoaded"]}/>
+          <ResistorSelect label="Resistor Loaded"  setInputValues={setJobDetails} target="resistorLoaded" value={jobDetails["resistorLoaded"]} />
           <NextButton text="Start tests" isDisabled={Object.values(jobDetails).includes(undefined)} />
           <CancelButton text="Cancel Job" />
         </>
@@ -54,6 +52,13 @@ function TestingWrapper() {
     case 2:
       componentBlock = (
         <>
+         {/* TODO: 
+          Await serial commms 
+            Update Magpie serial comms to:
+              Accept different new line terminators (send command, end command)
+            Update the information that's actually displayed
+          When it's found, continue on.
+         */}
           <h1 className='text-center text-3xl mt-16 mb-8'>Attach test jig to ZIP unit</h1>
           <h2 className='text-center text-xl '>Click Next when tester is attached</h2>
           <NextButton text="Start Test" isDisabled={Object.values(unitTestDetails).includes(undefined)} />
@@ -72,6 +77,10 @@ function TestingWrapper() {
     default:
       break;
   }
+
+  useEffect(() => {
+    console.log(jobDetails)
+  },[jobDetails])
 
 
   return (
