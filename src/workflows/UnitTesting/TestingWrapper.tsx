@@ -7,6 +7,7 @@ import BackButton from '../../components/shared/BackButton'
 import CancelButton from '../../components/shared/CancelButton';
 import { SystemContext } from '../../context/SystemContext';
 import TestFeedbackWrapper from './TestFeedbackWrapper'
+import SerialComms from '../../helpers/SerialComms'
 
 interface JobDetails {
   batchNumber: string | undefined,
@@ -61,6 +62,8 @@ function TestingWrapper() {
          */}
           <h1 className='text-center text-3xl mt-16 mb-8'>Attach test jig to ZIP unit</h1>
           <h2 className='text-center text-xl '>Click Next when tester is attached</h2>
+          <button>Connect to comms</button>
+          <SerialComms />
           <NextButton text="Start Test" isDisabled={Object.values(unitTestDetails).includes(undefined)} />
           <BackButton text="Back" />
         </>

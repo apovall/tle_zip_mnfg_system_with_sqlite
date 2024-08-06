@@ -37,7 +37,31 @@ function createWindow() {
       contextIsolation: false,
       nodeIntegration: true,
       webSecurity: true, // Allow Ajax cross
+      v8CacheOptions: "none",
     },
+  })
+
+  win.webContents.session.setPermissionCheckHandler((webContents, permission, requestingOrigin, details) => {
+    if (permission === 'serial') {
+      // Add logic here to determine if permission should be given to allow serial selection
+      return true
+    }
+    return false
+  })
+
+  win.webContents.session.on('select-serial-port', (event, portList, webContents, callback) => {
+    event.preventDefault()
+    const selectedPort = portList.find((device) => {
+      console.log('port list', portList)
+      return device.vendorId === '1155' && device.productId === '22336'
+    })
+    if (!selectedPort) {
+      console.log('Port not selected')
+      callback('')
+    } else {
+      console.log('Port selected: ', selectedPort)
+      callback(selectedPort.portId)
+    }
   })
 
   // Test active push message to Renderer-process.
@@ -47,7 +71,7 @@ function createWindow() {
 
   if (process.env.VITE_DEV_SERVER_URL) {
     win.loadURL(process.env.VITE_DEV_SERVER_URL)
-    // win.webContents.openDevTools()
+    win.webContents.openDevTools()
   } else {
     // win.loadFile('dist/index.html')
     win.loadFile(path.join(process.env.DIST, 'index.html'))
