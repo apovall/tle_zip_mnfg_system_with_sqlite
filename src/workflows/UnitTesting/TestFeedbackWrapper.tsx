@@ -1,39 +1,70 @@
 import TestParameterFeedback from "./TestParameterFeedback";
 import InstructionBlock from "./InstructionBlock";
+import { UnitDetails } from "@/types/interfaces";
 
-function TestFeedbackWrapper() {
+interface UnitDetailsProps {
+  details: UnitDetails;
+}
+// function TestFeedbackWrapper({qrCode, result, batt_contact_ok, batt_voltage_ok, tilt_sw_opens, tilt_sw_closes, resistance_ok, resistance, vcell_loaded, vcell_unloaded}:UnitDetails) {
+function TestFeedbackWrapper({ details }: UnitDetailsProps) {
+  console.log(details);
+  /* 
+batt_contact_ok
+batt_voltage_ok
+qrCode
+resistance
+resistance_ok
+result
+tilt_sw_closes
+tilt_sw_opens
+vcell_loaded
+vcell_unloaded
+  */
+
+  console.log(details["batt_contact_ok"])
+
   return (
     <div className="flex flex-row justify-center text-main">
-      <div className="flex flex-col justify-center">
+      <div className="flex flex-col justify-center basis-1/3">
         <TestParameterFeedback
-          text="Battery Voltage OK"
-          status={"ok"}
-          isInTest={true}
+          text="Battery Contact OK"
+          value={null}
+          status={details["batt_contact_ok"]}
         />
         <TestParameterFeedback
           text="Battery Voltage OK"
-          status={"ok"}
-          isInTest={true}
+          value={null}
+          status={details["batt_voltage_ok"]}
+          
         />
         <TestParameterFeedback
-          text="Battery Voltage OK"
-          status={"ok"}
-          isInTest={true}
+          text="Resistance OK"
+          value={null}
+          status={details["resistance_ok"]}
         />
         <TestParameterFeedback
-          text="Battery Voltage OK"
-          status={"testing"}
-          isInTest={true}
+          text="Tilt Switch Closes"
+          value={null}
+          status={details["tilt_sw_closes"]}
         />
         <TestParameterFeedback
-          text="Battery Voltage OK"
-          status={"fail"}
-          isInTest={true}
+          text="Tilt Switch Opens"
+          value={null}
+          status={details["tilt_sw_opens"]}
         />
-
+        <TestParameterFeedback
+          text="Vcell Loaded"
+          value={details["vcell_loaded"]}
+          status={null}
+        />
+        <TestParameterFeedback
+          text="Vcell Unloaded"
+          value={details["vcell_unloaded"]}
+          status={null}
+        />
       </div>
-        <div className="border-l border-disabled h-full mx-20"></div>
-        <InstructionBlock text="hold unit orientation" status="hold" />
+      <div className="border-l border-disabled h-full mx-20"></div>
+      <InstructionBlock text="hold unit orientation" status="hold" />
     </div>
   );
 }

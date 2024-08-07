@@ -8,26 +8,29 @@ import CancelButton from '../../components/shared/CancelButton';
 import { SystemContext } from '../../context/SystemContext';
 import TestFeedbackWrapper from './TestFeedbackWrapper'
 import SerialComms from '../../helpers/SerialComms'
-
-interface JobDetails {
-  batchNumber: string | undefined,
-  resistorLoaded: number | undefined
-}
-
-interface UnitTestDetails {
-  qrCode: string | undefined,
-}
+import { UnitDetails, JobDetails, RawResults } from '@/types/interfaces'
+import processResults from '../../helpers/processResults'
 
 function TestingWrapper() {
   let componentBlock
 
   const {pageNumber} = useContext(SystemContext);
   const [jobDetails, setJobDetails] = useState<JobDetails>({
-    "batchNumber": undefined,
-    "resistorLoaded": undefined
+    batchNumber: undefined,
+    resistorLoaded: undefined,
   })
-  const [unitTestDetails, setUnitTestDetails] = useState<UnitTestDetails>({
-    "qrCode": undefined,
+  const [rawResults, setRawResults] = useState<RawResults>({results: null})
+  const [unitDetails, setUnitDetails] = useState<UnitDetails>({
+    qrCode: undefined,
+    result: null,
+    batt_contact_ok: null,
+    batt_voltage_ok: null,
+    tilt_sw_opens: null,
+    tilt_sw_closes: null,
+    resistance_ok: null,
+    resistance: null,
+    vcell_loaded: null,
+    vcell_unloaded: null,
   })
 
   switch (pageNumber) {
@@ -44,8 +47,8 @@ function TestingWrapper() {
     case 1:
       componentBlock = (
         <>
-          <QRCodeInput label="PCB QR Code" setInputValues={setUnitTestDetails} target="qrCode" value={unitTestDetails["qrCode"]}/>
-          <NextButton text="Next" isDisabled={Object.values(unitTestDetails).includes(undefined)} />
+          <QRCodeInput label="PCB QR Code" setInputValues={setUnitDetails} target="qrCode" value={unitDetails["qrCode"]}/>
+          <NextButton text="Next" isDisabled={Object.values(unitDetails).includes(undefined)} />
           <BackButton text="Back" />
         </>
       )
@@ -53,26 +56,18 @@ function TestingWrapper() {
     case 2:
       componentBlock = (
         <>
-         {/* TODO: 
-          Await serial commms 
-            Update Magpie serial comms to:
-              Accept different new line terminators (send command, end command)
-            Update the information that's actually displayed
-          When it's found, continue on.
-         */}
           <h1 className='text-center text-3xl mt-16 mb-8'>Attach test jig to ZIP unit</h1>
-          <h2 className='text-center text-xl '>Click Next when tester is attached</h2>
-          <button>Connect to comms</button>
-          <SerialComms />
-          <NextButton text="Start Test" isDisabled={Object.values(unitTestDetails).includes(undefined)} />
-          <BackButton text="Back" />
+          <h2 className='text-center text-xl '>Press Reset button on tester when ready</h2>
+          <SerialComms setRawResults={setRawResults}/>
+          {/* TODO: Tester to be automatically connected when being plugged in */}
+          {/* Renderer might not be seeing the event, so might need to send it from ipcMain to ipcRenderer */}
         </>
       )
       break;
     case 3:
       componentBlock = (
         <>
-          <TestFeedbackWrapper />
+          <TestFeedbackWrapper details={unitDetails}/>
         </>
       )
       break;
@@ -82,8 +77,12 @@ function TestingWrapper() {
   }
 
   useEffect(() => {
-    console.log(jobDetails)
-  },[jobDetails])
+    processResults(rawResults, {setUnitDetails})
+  },[rawResults])
+
+  // useEffect(() => {
+  //   console.log(unitDetails)
+  // }, [unitDetails])
 
 
   return (

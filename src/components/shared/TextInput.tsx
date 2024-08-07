@@ -1,16 +1,12 @@
 import { Dispatch, SetStateAction } from 'react'
+import { JobDetails, TextInputProps } from '@/types/interfaces'
 
-interface JobDetails {
-  batchNumber: string | undefined,
-  resistorLoaded: number | undefined
-}
-
-interface TextInputProps {
-  label: string;
-  setInputValues:  Dispatch<SetStateAction<JobDetails>>;
-  target: string;
-  value: string | number | undefined;
-}
+// interface TextInputProps {
+//   label: string;
+//   setInputValues:  Dispatch<SetStateAction<JobDetails>>;
+//   target: string;
+//   value: string | number | undefined;
+// }
 
 function TextInput({label, setInputValues, target, value}:TextInputProps) {
 

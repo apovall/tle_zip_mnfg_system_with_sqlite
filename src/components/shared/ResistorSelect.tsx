@@ -30,10 +30,10 @@ function ResistorSelect({ label, setInputValues, target }: ResistorSelectProps) 
           }}
         >
           <option value="0">0</option>
-          <option value="3600">3K6</option>
-          <option value="4700">4K7</option>
-          <option value="6490">6K49</option>
-          <option value="8200">8K2</option>
+          <option value="3600">3.6K</option>
+          <option value="4700">4.7K</option>
+          <option value="6490">6.49K</option>
+          <option value="8200">8.2K</option>
           <option value="10000">10K</option>
         </select>
       </div>
