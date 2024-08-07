@@ -97,9 +97,9 @@ function SerialComms({ setRawResults, writeCommand, startConnection}: SerialComm
     if (port !== null){
       readSerial()
     }
-    if (isConnected){
-      setPageNumber(pageNumber + 1)
-    }
+    // if (isConnected){
+    //   setPageNumber(pageNumber + 1)
+    // }
   }, [port, isConnected])
 
   useEffect(() => {

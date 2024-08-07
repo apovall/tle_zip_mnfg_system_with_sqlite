@@ -8,8 +8,6 @@ interface UnitDetailsProps {
 // function TestFeedbackWrapper({qrCode, result, batt_contact_ok, batt_voltage_ok, tilt_sw_opens, tilt_sw_closes, resistance_ok, resistance, vcell_loaded, vcell_unloaded}:UnitDetails) {
 function TestFeedbackWrapper({ details }: UnitDetailsProps) {
 
-  
-
   return (
     <div className="flex flex-row justify-center text-main">
       <div className="flex flex-col justify-center basis-1/3">
@@ -52,6 +50,8 @@ function TestFeedbackWrapper({ details }: UnitDetailsProps) {
       </div>
       <div className="border-l border-disabled h-full mx-20"></div>
       <InstructionBlock status={details["action"]} />
+      {['fail', 'pass'].includes(details["action"]) ? <p className="py-8">Saving to database...</p> : <></>}
+      
     </div>
   );
 }

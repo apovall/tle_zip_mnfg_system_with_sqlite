@@ -40,14 +40,17 @@ function processResults(results: RawResults, jobDetails:JobDetails, setUnitDetai
 
     sendResult(setWriteCommand.setWriteCommand, "resistance_ok", resCheckResult)
     // Update resistance & battery 
-    if (action == 'fail' || battCheckResult == 'fail' || resCheckResult == "fail"){
-      action = 'fail'
-    }
-    cleanedResults = {...cleanedResults, resistance_ok: resCheckResult, batt_voltage_ok: battCheckResult, action: action}
+    cleanedResults = {...cleanedResults, resistance_ok: resCheckResult, batt_voltage_ok: battCheckResult}
     let finalOutcome = finalCheck(cleanedResults)
-    cleanedResults = {...cleanedResults, result: finalOutcome}
-
-    console.log("====>",cleanedResults)
+    if (finalOutcome == 'pass'){
+      action == 'pass'
+    } else if (finalOutcome == 'fail'){
+      action == 'fail'
+    }
+    console.log("=-=-=-=-=-=-=-=->", action)
+    
+    cleanedResults = {...cleanedResults, result: finalOutcome, action: action}
+    console.log("=-=-=-=-=-=-=-=->", cleanedResults)
 
     setUnitDetails.setUnitDetails((prev) => {
       return {...prev, ...cleanedResults}

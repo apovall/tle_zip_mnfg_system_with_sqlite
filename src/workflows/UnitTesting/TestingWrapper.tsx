@@ -61,25 +61,31 @@ function TestingWrapper() {
       )
       break;
     case 2:
-      if (isConnected ){
-        setPageNumber(pageNumber+1)
-      }
-      componentBlock = (
-        <>
-          <h1 className='text-center text-3xl mt-16 mb-8'>Attach test jig to ZIP unit</h1>
-          <h2 className='text-center text-xl '>Press Reset button on tester when ready</h2>
-          {/* TODO: Tester to be automatically connected when being plugged in */}
-          {/* Renderer might not be seeing the event, so might need to send it from ipcMain to ipcRenderer */}
-        </>
-      )
-      break;
-    case 3:
       componentBlock = (
         <>
           <TestFeedbackWrapper details={unitDetails}/>
         </>
       )
       break;
+      // if (isConnected ){
+      //   setPageNumber(pageNumber+1) // TODO: this is causing crashes.
+      // }
+      // componentBlock = (
+      //   <>
+      //     <h1 className='text-center text-3xl mt-16 mb-8'>Attach test jig to ZIP unit</h1>
+      //     <h2 className='text-center text-xl '>Press Reset button on tester when ready</h2>
+      //     {/* TODO: Tester to be automatically connected when being plugged in */}
+      //     {/* Renderer might not be seeing the event, so might need to send it from ipcMain to ipcRenderer */}
+      //   </>
+      // )
+      // break;
+    // case 3:
+    //   componentBlock = (
+    //     <>
+    //       <TestFeedbackWrapper details={unitDetails}/>
+    //     </>
+    //   )
+    //   break;
   
     default:
       break;
@@ -96,13 +102,20 @@ function TestingWrapper() {
   }, [pageNumber])
 
   useEffect(() => {
-    if (unitDetails.result == "pass"){
+    const finaliseResults = async () => {
+      console.log('saving to database')
+      await new Promise(resolve => setTimeout(() => {
+        setUnitDetails(baseUnitDetails)
+        setPageNumber(1)
+      }, 2500));
+    }
+
+    if (unitDetails.result == "pass" || unitDetails.result == "fail"){
+      finaliseResults()
       // save
       // reset
       // go back to page
-      console.log('saving to database')
-      setUnitDetails(baseUnitDetails)
-      setPageNumber(1)
+
     }
   }, [unitDetails])
 

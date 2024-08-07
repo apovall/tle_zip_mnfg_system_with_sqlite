@@ -34,3 +34,8 @@ Let Tim know what I'll be saving to SQLite
 
 send first command as /n on first connect.
 
+
+TODO:
+- save to database
+- Get 'pass' to show
+- Look into crash
