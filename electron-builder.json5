@@ -2,9 +2,9 @@
  * @see https://www.electron.build/configuration/configuration
  */
 {
-  "appId": "YourAppID",
+  "appId": "com.product_nimbus.zip_manufacturing_test_interface",
   "asar": false,
-  "productName": "YourAppName",
+  "productName": "ZIP Manufacturing Test System User Interface",
   "copyright": "Copyright © 2022 ${author}",
   "directories": {
     "output": "release/${version}"
@@ -34,7 +34,7 @@
     "artifactName": "${productName}-Mac-${version}-Installer.${ext}"
   },
   "linux": {
-    "target": ["AppImage"],
+    "target": ["AppImage", "deb", "snap"],
     "artifactName": "${productName}-Linux-${version}.${ext}"
   }
 }
