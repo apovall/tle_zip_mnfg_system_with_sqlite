@@ -11,6 +11,7 @@ export interface UnitDetails {
   resistance: string | null
   vcell_loaded: string | number | null
   vcell_unloaded: string | number | null
+  action: "hold" | "flip" | "passed" | "fail";
 }
 
 export interface JobDetails {

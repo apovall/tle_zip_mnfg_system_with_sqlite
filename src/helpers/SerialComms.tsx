@@ -45,17 +45,13 @@ function SerialComms({ setRawResults, writeCommand, startConnection}: SerialComm
             textStream = ""
           } else {
             textStream += value;
+            // console.log(textStream)
           }
         }
 
         results = textStream.split(`${terminator}`);
 
         if (results.at(-1) == "" && results.at(-2) == ">"){
-          // writeData()
-          // writeData("< result" + terminator + "resistance_ok: pass" + terminator + ">" + terminator)
-          // writeData("< result" + terminator + "batt_voltage_ok: pass" + terminator + ">" + terminator)
-          console.log("*_*_*_*_*_> ", writeCommand)
-          // writeData(writeCommand)
           setRawResults({results})
           results = []
           textStream = ""
@@ -98,7 +94,6 @@ function SerialComms({ setRawResults, writeCommand, startConnection}: SerialComm
   };
   
   useEffect(() => {
-    console.log('In here due to changes in port & isConnected')
     if (port !== null){
       readSerial()
     }
@@ -114,7 +109,6 @@ function SerialComms({ setRawResults, writeCommand, startConnection}: SerialComm
   }, [startConnection])
 
   useEffect(() => {
-    console.log('writeCommand changed:', writeCommand);
     writeData(writeCommand);
   }, [writeCommand]);
 

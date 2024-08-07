@@ -4,12 +4,18 @@ function processResults(results: RawResults, jobDetails:JobDetails, setUnitDetai
   let cleanedResults = {};
   let resCheckResult = "unknown"
   let battCheckResult = "unknown"
+  let action = "flip"
   const terminator = "\r\n"
 
   if (results.results) {
     results.results?.forEach((item) => {
       if (!["< result", ">", ""].includes(item)) {
         let splitResult = item.split(": ");
+
+        console.log(splitResult[1])
+        if (splitResult[1] == 'fail'){
+          action = 'fail'
+        }
 
         if (splitResult[1].includes(" mV")){
           splitResult[1] = splitResult[1].replace(" mV", "");
@@ -31,10 +37,11 @@ function processResults(results: RawResults, jobDetails:JobDetails, setUnitDetai
       }
     });
     // Update resistance & battery 
-    cleanedResults = {...cleanedResults, resistance_ok: resCheckResult, batt_voltage_ok: battCheckResult}
-    // // setWriteCmd.setWriteCmd("Test data being written")
-    // setWriteCommand.setWriteCommand("< result" + terminator + "resistance_ok: pass" + terminator + ">" + terminator)
-    // setWriteCommand.setWriteCommand("< result" + terminator + "batt_voltage_ok: pass" + terminator + ">" + terminator)
+    if (action == 'fail' || battCheckResult == 'fail' || resCheckResult == "fail"){
+      action = 'fail'
+    }
+    cleanedResults = {...cleanedResults, resistance_ok: resCheckResult, batt_voltage_ok: battCheckResult, action: action}
+
     setUnitDetails.setUnitDetails((prev) => {
       return {...prev, ...cleanedResults}
     })
@@ -59,8 +66,6 @@ function checkResistance(loadedValue:number|undefined, measuredValue:number){
   const upperRange = loadedValue + (loadedValue * threshold)
   const lowerRange = loadedValue - (loadedValue * threshold)
 
-  console.log('==== in resistance value ======')
-  console.log(measuredValue < lowerRange, measuredValue > upperRange)
   if (measuredValue < lowerRange || measuredValue > upperRange){
     return 'fail'
   }
@@ -78,5 +83,5 @@ function checkBattVoltage(measuredCell:number | undefined){
     return 'fail'
   }
   return 'pass'
-
 }
+

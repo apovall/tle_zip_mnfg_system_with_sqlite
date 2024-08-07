@@ -1,24 +1,27 @@
 function InstructionBlock({
-  text,
   status,
 }: {
-  text: string;
-  status: "hold" | "flip" | "passed" | "failed";
+  status: "hold" | "flip" | "passed" | "fail";
 }) {
   let style;
+  let text;
 
   switch (status) {
     case "hold":
       style = "bg-orange";
+      text = "hold unit orientation";
       break;
     case "flip":
       style = "bg-lime";
+      text = "flip unit";
       break;
     case "passed":
       style = "bg-acceptable-green";
+      text = "passed";
       break;
-    case "failed":
+    case "fail":
       style = "bg-cancel";
+      text = "failed";
       break;
 
     default:
