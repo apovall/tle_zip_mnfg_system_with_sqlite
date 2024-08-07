@@ -11,11 +11,14 @@ import SerialComms from '../../helpers/SerialComms'
 // import {initialConnectAndRead, serialWrite} from '../../helpers/SerialComms2'
 import { UnitDetails, JobDetails, RawResults } from '@/types/interfaces'
 import processResults from '../../helpers/processResults'
+import { saveUnitResults } from "../../better-sqlite3"
 
 function TestingWrapper() {
 
   let componentBlock
   let baseUnitDetails:UnitDetails = {
+    batchNumber: null,
+    resistorLoaded: null,
     qrCode: undefined,
     result: null,
     batt_contact_ok: null,
@@ -44,9 +47,9 @@ function TestingWrapper() {
     case 0:
       componentBlock = (
         <>
-          <TextInput label="Batch Name / Number" setInputValues={setJobDetails} target="batchNumber" value={jobDetails["batchNumber"]}/>
-          <ResistorSelect label="Resistor Loaded"  setInputValues={setJobDetails} target="resistorLoaded" value={jobDetails["resistorLoaded"]} />
-          <NextButton text="Start tests" isDisabled={Object.values(jobDetails).includes(undefined)} />
+          <TextInput label="Batch Name / Number" setInputValues={setUnitDetails} target="batchNumber" value={unitDetails["batchNumber"]}/>
+          <ResistorSelect label="Resistor Loaded"  setInputValues={setUnitDetails} target="resistorLoaded" value={unitDetails["resistorLoaded"]} />
+          <NextButton text="Start tests" isDisabled={unitDetails["batchNumber"] == null || unitDetails["resistorLoaded"] == null} />
           <CancelButton text="Cancel Job" />
         </>
       )
@@ -92,7 +95,7 @@ function TestingWrapper() {
   }
 
   useEffect(() => {
-    processResults(rawResults, jobDetails, {setUnitDetails}, {setWriteCommand})
+    processResults(rawResults, unitDetails, {setUnitDetails}, {setWriteCommand})
   },[rawResults])
 
   useEffect(() => {
@@ -104,7 +107,12 @@ function TestingWrapper() {
   useEffect(() => {
     const finaliseResults = async () => {
       console.log('saving to database')
+      saveUnitResults(unitDetails)
       await new Promise(resolve => setTimeout(() => {
+        baseUnitDetails = {
+          ...baseUnitDetails, 
+          resistorLoaded: unitDetails['resistorLoaded'], 
+          batchNumber: unitDetails['batchNumber']}
         setUnitDetails(baseUnitDetails)
         setPageNumber(1)
       }, 2500));
@@ -112,11 +120,8 @@ function TestingWrapper() {
 
     if (unitDetails.result == "pass" || unitDetails.result == "fail"){
       finaliseResults()
-      // save
-      // reset
-      // go back to page
-
     }
+    console.log(unitDetails)
   }, [unitDetails])
 
   return (

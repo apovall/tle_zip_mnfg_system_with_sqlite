@@ -9,7 +9,7 @@ interface SerialCommsProps {
 }
 
 function SerialComms({ setRawResults, writeCommand, startConnection}: SerialCommsProps) {
-  const { pageNumber, setPageNumber, isConnected, setIsConnected } = useContext(SystemContext);
+  const { isConnected, setIsConnected } = useContext(SystemContext);
 
   const navigator = useRef(window.navigator);
   const textEncoder = useRef(new TextEncoderStream())
@@ -32,7 +32,7 @@ function SerialComms({ setRawResults, writeCommand, startConnection}: SerialComm
 
     try {
       while (true) {
-        const { value, done } = await reader.current.read()
+        const { value, done } = await reader.current?.read()
 
         if (done) {
           reader.current?.releaseLock()
@@ -58,7 +58,7 @@ function SerialComms({ setRawResults, writeCommand, startConnection}: SerialComm
         }
       }
     } catch (error) {
-      // TODO: disconnectSerial()
+      // disconnectSerial()
       console.log("Error: ", error)
     }
   }
@@ -71,12 +71,10 @@ function SerialComms({ setRawResults, writeCommand, startConnection}: SerialComm
       writer.current?.write(command)
     }
   }
-
+  
   const requestPort = async () => {
     try {
       const selectedPort = await navigator.current.serial.requestPort();
-      const allPorts = await navigator.current.serial.getPorts();
-      // console.log('All Ports:', allPorts)
       await selectedPort.open({ baudRate: 115200 });
       setPort(selectedPort);
       setIsConnected(true);
@@ -87,7 +85,6 @@ function SerialComms({ setRawResults, writeCommand, startConnection}: SerialComm
       readableStreamClosed.current = selectedPort.readable.pipeTo(textDecoder.current.writable)
       reader.current = textDecoder.current.readable.getReader()
 
-      // console.log("Port opened:", selectedPort);
     } catch (error) {
       console.error("Error opening serial port:", error);
     }

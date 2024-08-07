@@ -1,5 +1,7 @@
 import { createContext, FC, useState, ReactNode } from 'react';
 import { SystemContextProps } from '@/types/interfaces';
+import Database from 'better-sqlite3'
+import { saveUnitResults } from '../better-sqlite3';
 
 
 export const SystemContext = createContext<SystemContextProps>({
@@ -8,7 +10,7 @@ export const SystemContext = createContext<SystemContextProps>({
   pageNumber: 0,
   setPageNumber: () => {},
   isConnected: false,
-  setIsConnected: () => {}
+  setIsConnected: () => {},
 });
 
 interface SystemProviderProps {

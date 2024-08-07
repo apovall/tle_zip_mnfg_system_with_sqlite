@@ -1,7 +1,12 @@
 import { RawResults, SetUnitDetails, setWriteCommand, JobDetails, UnitDetails } from "@/types/interfaces";
 import { Dispatch, SetStateAction } from 'react'
 
-function processResults(results: RawResults, jobDetails:JobDetails, setUnitDetails: SetUnitDetails, setWriteCommand: setWriteCommand) {
+function processResults(
+  results: RawResults, 
+  unitDetails: UnitDetails,
+  setUnitDetails: SetUnitDetails, 
+  setWriteCommand: setWriteCommand
+  ) {
   let cleanedResults = {};
   let resCheckResult = "unknown"
   let battCheckResult = "unknown"
@@ -18,40 +23,30 @@ function processResults(results: RawResults, jobDetails:JobDetails, setUnitDetai
           action = 'fail'
         }
 
-        if (splitResult[1].includes(" mV")){
-          splitResult[1] = splitResult[1].replace(" mV", "");
-          if (splitResult[0] == "vcell_unloaded"){
-            battCheckResult = checkBattVoltage(parseInt(splitResult[1]))
-            cleanedResults = {...cleanedResults, batt_voltage_ok: battCheckResult }
-            // sendResult(setWriteCommand.setWriteCommand, "batt_voltage_ok", battCheckResult)
-            setWriteCommand.setWriteCommand("< result" + terminator + `batt_voltage_ok: ${battCheckResult}` + terminator + ">" + terminator) // TODO: Investigate why this fails when done back to back
-          }
-
+        // if (splitResult[1].includes(" mV")){
+        //   // splitResult[1] = splitResult[1].replace(" mV", "");
+        if (splitResult[0] == "vcell_unloaded"){
+          battCheckResult = checkBattVoltage(parseInt(splitResult[1]))
+          cleanedResults = {...cleanedResults, batt_voltage_ok: battCheckResult }
+          // sendResult(setWriteCommand.setWriteCommand, "batt_voltage_ok", battCheckResult)
+          setWriteCommand.setWriteCommand("< result" + terminator + `batt_voltage_ok: ${battCheckResult}` + terminator + ">" + terminator) // TODO: Investigate why this fails when done back to back
         }
+
+        // }
         if (splitResult[1].includes(" ohms")){
-          splitResult[1] = splitResult[1].replace(" ohms", "");
+          // splitResult[1] = splitResult[1].replace(" ohms", "");
           // Check resistance in here
-          resCheckResult = checkResistance(jobDetails["resistorLoaded"], parseInt(splitResult[1]))
+          resCheckResult = checkResistance(unitDetails["resistorLoaded"], parseInt(splitResult[1]))
           cleanedResults = {...cleanedResults, 'resistance_ok': resCheckResult }
         }
-
       }
     });
 
     sendResult(setWriteCommand.setWriteCommand, "resistance_ok", resCheckResult)
     // Update resistance & battery 
-    cleanedResults = {...cleanedResults, resistance_ok: resCheckResult, batt_voltage_ok: battCheckResult}
+    // cleanedResults = {...cleanedResults, resistance_ok: resCheckResult, batt_voltage_ok: battCheckResult}
     let finalOutcome = finalCheck(cleanedResults)
-    if (finalOutcome == 'pass'){
-      action == 'pass'
-    } else if (finalOutcome == 'fail'){
-      action == 'fail'
-    }
-    console.log("=-=-=-=-=-=-=-=->", action)
-    
     cleanedResults = {...cleanedResults, result: finalOutcome, action: action}
-    console.log("=-=-=-=-=-=-=-=->", cleanedResults)
-
     setUnitDetails.setUnitDetails((prev) => {
       return {...prev, ...cleanedResults}
     })
@@ -60,7 +55,7 @@ function processResults(results: RawResults, jobDetails:JobDetails, setUnitDetai
 
 export default processResults;
 
-function checkResistance(loadedValue:number|undefined, measuredValue:number){
+function checkResistance(loadedValue:number|null, measuredValue:number){
   const threshold = 0.05
 
   if (loadedValue == undefined){

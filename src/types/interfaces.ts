@@ -2,6 +2,8 @@ import { Dispatch, SetStateAction } from 'react'
 
 export interface UnitDetails {
   qrCode: string | undefined,
+  batchNumber: string | null,
+  resistorLoaded: number | null,
   result: string | null
   batt_contact_ok: "pass" | "fail" | "unknown" | null
   batt_voltage_ok: "pass" | "fail" | "unknown" | null
@@ -25,9 +27,9 @@ interface QRCode {
 
 export interface TextInputProps {
   label: string;
-  setInputValues:  Dispatch<SetStateAction<JobDetails>>;
+  setInputValues:  Dispatch<SetStateAction<UnitDetails>>;
   target: string;
-  value: string | number | undefined;
+  value: string | null;
 }
 
 export interface RawResults {

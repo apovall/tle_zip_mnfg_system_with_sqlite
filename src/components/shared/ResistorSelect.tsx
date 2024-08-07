@@ -1,15 +1,16 @@
 import { Dispatch, SetStateAction } from "react";
+import { UnitDetails } from "@/types/interfaces";
 
-interface JobDetails {
-  batchNumber: string | undefined;
-  resistorLoaded: number | undefined;
-}
+// interface JobDetails {
+//   batchNumber: string | undefined;
+//   resistorLoaded: number | undefined;
+// }
 
 interface ResistorSelectProps {
   label: string;
-  setInputValues: Dispatch<SetStateAction<JobDetails>>;
+  setInputValues: Dispatch<SetStateAction<UnitDetails>>;
   target: string;
-  value: string | number | undefined;
+  value: number | null;
 }
 
 function ResistorSelect({ label, setInputValues, target }: ResistorSelectProps) {
@@ -25,7 +26,7 @@ function ResistorSelect({ label, setInputValues, target }: ResistorSelectProps) 
           id={target}
           onChange={(e) => {
             setInputValues((prev) => {
-              return { ...prev, [target]: e.target.value };
+              return { ...prev, [target]: parseInt(e.target.value) };
             });
           }}
         >
