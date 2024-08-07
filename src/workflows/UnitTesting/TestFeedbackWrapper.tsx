@@ -49,7 +49,7 @@ function TestFeedbackWrapper({ details }: UnitDetailsProps) {
         />
       </div>
       <div className="border-l border-disabled h-full mx-20"></div>
-      <InstructionBlock text="hold unit orientation" status="hold" />
+      <InstructionBlock text="hold unit orientation" status={details["action"]} />
     </div>
   );
 }

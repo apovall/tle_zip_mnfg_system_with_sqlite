@@ -15,8 +15,11 @@ function ActionSelector({
     <div
       className={`w-[500px] h-[500px] ${bgColour} flex flex-row justify-center mx-20 cursor-pointer hover:scale-105 transition-transform hover:rounded-xl`}
       onClick={() => {
-        systemContext.setPageNumber(0)
-        systemContext.setActiveJob(type)
+        // Temporarily disabled
+        if (type=='test'){
+          systemContext.setPageNumber(0)
+          systemContext.setActiveJob(type)
+        }
       }}
     >
       <h1 className="self-center text-white text-4xl">{text}</h1>

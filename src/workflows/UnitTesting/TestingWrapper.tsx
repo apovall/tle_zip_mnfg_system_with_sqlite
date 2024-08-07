@@ -34,6 +34,7 @@ function TestingWrapper() {
     resistance: null,
     vcell_loaded: null,
     vcell_unloaded: null,
+    action: "hold",
   })
 
   const [writeCommand, setWriteCommand] = useState('')
@@ -84,7 +85,7 @@ function TestingWrapper() {
   }
 
   useEffect(() => {
-    processResults(rawResults, {setUnitDetails}, {setWriteCommand})
+    processResults(rawResults, jobDetails, {setUnitDetails}, {setWriteCommand})
   },[rawResults])
 
   useEffect(() => {
@@ -97,12 +98,6 @@ function TestingWrapper() {
     <div className="w-full h-screen flex flex-col justify-center">
       <SerialComms setRawResults={setRawResults} writeCommand={writeCommand} startConnection={startConnection} />
       {componentBlock}
-      <button onClick={() => 
-        setWriteCommand("< result" + terminator + "resistance_ok: pass" + terminator + ">" + terminator)
-      }> Send Res Command</button>
-      <button onClick={() => 
-        setWriteCommand("< result" + terminator + "batt_voltage_ok: pass" + terminator + ">" + terminator)
-      }> Send Batt Command</button>
     </div>
   )
 }
