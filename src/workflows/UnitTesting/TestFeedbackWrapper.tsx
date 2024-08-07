@@ -8,6 +8,8 @@ interface UnitDetailsProps {
 // function TestFeedbackWrapper({qrCode, result, batt_contact_ok, batt_voltage_ok, tilt_sw_opens, tilt_sw_closes, resistance_ok, resistance, vcell_loaded, vcell_unloaded}:UnitDetails) {
 function TestFeedbackWrapper({ details }: UnitDetailsProps) {
 
+  
+
   return (
     <div className="flex flex-row justify-center text-main">
       <div className="flex flex-col justify-center basis-1/3">

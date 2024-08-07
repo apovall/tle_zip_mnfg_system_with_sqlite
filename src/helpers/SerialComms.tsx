@@ -9,7 +9,7 @@ interface SerialCommsProps {
 }
 
 function SerialComms({ setRawResults, writeCommand, startConnection}: SerialCommsProps) {
-  const { pageNumber, setPageNumber } = useContext(SystemContext);
+  const { pageNumber, setPageNumber, isConnected, setIsConnected } = useContext(SystemContext);
 
   const navigator = useRef(window.navigator);
   const textEncoder = useRef(new TextEncoderStream())
@@ -21,7 +21,7 @@ function SerialComms({ setRawResults, writeCommand, startConnection}: SerialComm
   const terminator = "\r\n"
 
   const [port, setPort] = useState(null);
-  const [isConnected, setIsConnected] = useState(false);
+  // const [isConnected, setIsConnected] = useState(false);
 
   const newTest = "< start" + terminator + "mode: 2" + terminator + ">" + terminator
   const newResult = "< result" + terminator

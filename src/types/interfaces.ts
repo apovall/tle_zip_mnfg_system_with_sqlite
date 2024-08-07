@@ -11,7 +11,7 @@ export interface UnitDetails {
   resistance: string | null
   vcell_loaded: string | number | null
   vcell_unloaded: string | number | null
-  action: "hold" | "flip" | "passed" | "fail";
+  action: "hold" | "flip" | "pass" | "fail";
 }
 
 export interface JobDetails {
@@ -49,6 +49,8 @@ export interface SystemContextProps {
   setActiveJob: Dispatch<SetStateAction<"select" | "test" | "assemble">>
   pageNumber: number;
   setPageNumber: Dispatch<SetStateAction<number>>
+  isConnected: boolean,
+  setIsConnected: Dispatch<SetStateAction<boolean>>
 }
 
 export interface ProcessResultsProps {

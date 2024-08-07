@@ -1,7 +1,7 @@
 function InstructionBlock({
   status,
 }: {
-  status: "hold" | "flip" | "passed" | "fail";
+  status: "hold" | "flip" | "pass" | "fail";
 }) {
   let style;
   let text;
@@ -15,7 +15,7 @@ function InstructionBlock({
       style = "bg-lime";
       text = "flip unit";
       break;
-    case "passed":
+    case "pass":
       style = "bg-acceptable-green";
       text = "passed";
       break;

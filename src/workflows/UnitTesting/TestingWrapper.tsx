@@ -15,15 +15,7 @@ import processResults from '../../helpers/processResults'
 function TestingWrapper() {
 
   let componentBlock
-    const terminator = "\r\n"
-
-  const {pageNumber} = useContext(SystemContext);
-  const [jobDetails, setJobDetails] = useState<JobDetails>({
-    batchNumber: undefined,
-    resistorLoaded: undefined,
-  })
-  const [rawResults, setRawResults] = useState<RawResults>({results: null})
-  const [unitDetails, setUnitDetails] = useState<UnitDetails>({
+  let baseUnitDetails:UnitDetails = {
     qrCode: undefined,
     result: null,
     batt_contact_ok: null,
@@ -35,7 +27,15 @@ function TestingWrapper() {
     vcell_loaded: null,
     vcell_unloaded: null,
     action: "hold",
+  }
+
+  const {pageNumber, setPageNumber, isConnected} = useContext(SystemContext);
+  const [jobDetails, setJobDetails] = useState<JobDetails>({
+    batchNumber: undefined,
+    resistorLoaded: undefined,
   })
+  const [rawResults, setRawResults] = useState<RawResults>({results: null})
+  const [unitDetails, setUnitDetails] = useState<UnitDetails>(baseUnitDetails)
 
   const [writeCommand, setWriteCommand] = useState('')
   const [startConnection, setStartConnection] = useState(false)
@@ -61,8 +61,9 @@ function TestingWrapper() {
       )
       break;
     case 2:
-      // console.log('starting serial comms')
-      // serialRead(setRawResults)
+      if (isConnected ){
+        setPageNumber(pageNumber+1)
+      }
       componentBlock = (
         <>
           <h1 className='text-center text-3xl mt-16 mb-8'>Attach test jig to ZIP unit</h1>
@@ -93,6 +94,17 @@ function TestingWrapper() {
       setStartConnection(true)
     }
   }, [pageNumber])
+
+  useEffect(() => {
+    if (unitDetails.result == "pass"){
+      // save
+      // reset
+      // go back to page
+      console.log('saving to database')
+      setUnitDetails(baseUnitDetails)
+      setPageNumber(1)
+    }
+  }, [unitDetails])
 
   return (
     <div className="w-full h-screen flex flex-col justify-center">
