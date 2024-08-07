@@ -20,8 +20,9 @@ function processResults(results: RawResults, setUnitDetails: SetUnitDetails, set
       }
     });
     // // setWriteCmd.setWriteCmd("Test data being written")
-    setWriteCommand.setWriteCommand("< result" + terminator + "resistance_ok: pass" + terminator + ">" + terminator)
-    setWriteCommand.setWriteCommand("< result" + terminator + "batt_voltage_ok: pass" + terminator + ">" + terminator)
+    console.log('Setting write command')
+    // setWriteCommand.setWriteCommand("< result" + terminator + "resistance_ok: pass" + terminator + ">" + terminator)
+    // setWriteCommand.setWriteCommand("< result" + terminator + "batt_voltage_ok: pass" + terminator + ">" + terminator)
     setUnitDetails.setUnitDetails((prev) => {
       return {...prev, ...cleanedResults}
     })

@@ -58,15 +58,15 @@ function createWindow() {
     (event, portList, webContents, callback) => {
       event.preventDefault();
       const selectedPort = portList.find((device) => {
-        console.log("device", device);
-        console.log("port list", portList);
+        // console.log("device", device);
+        // console.log("port list", portList);
         return device.displayName == "STM32X";
       });
       if (!selectedPort) {
-        console.log("Port not selected");
+        // console.log("Port not selected");
         callback("");
       } else {
-        console.log("Port selected: ", selectedPort);
+        // console.log("Port selected: ", selectedPort);
         callback(selectedPort.portId);
       }
     }

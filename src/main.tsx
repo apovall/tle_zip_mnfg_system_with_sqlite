@@ -20,9 +20,9 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
 );
 
 ipcRenderer.invoke("get-database-path").then((dbpath) => {
-  console.log("==>", dbpath);
+  // console.log("==>", dbpath);
   const db = getSqlite3(dbpath);
-  console.log("[better-sqlite3]", db.pragma("journal_mode = WAL"));
+  // console.log("[better-sqlite3]", db.pragma("journal_mode = WAL"));
 });
 
 // Remove Preload scripts loading

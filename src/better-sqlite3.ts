@@ -22,14 +22,14 @@ export function createTable(tableName) {
 function readTable(tableName) {
   const selectStatement = database.prepare(`SELECT * FROM ${tableName}`);
   const rows = selectStatement.all();
-  console.log(rows);
+  // console.log(rows);
   return rows;
 }
 
 export function getSqlite3(filename: string) {
-  console.log(filename)
-  console.log(root)
-  console.log(import.meta.env.VITE_BETTER_SQLITE3_BINDING)
+  // console.log(filename)
+  // console.log(root)
+  // console.log(import.meta.env.VITE_BETTER_SQLITE3_BINDING)
   database ??= new Database(filename, {
     // https://github.com/WiseLibs/better-sqlite3/blob/v8.5.2/lib/database.js#L36
     // https://github.com/WiseLibs/better-sqlite3/blob/v8.5.2/lib/database.js#L50
@@ -38,9 +38,9 @@ export function getSqlite3(filename: string) {
   createTable('cats')
   const statement = database.prepare('INSERT INTO cats (name, age) VALUES (?, ?)');
   const result = statement.run('Horaz', 12);  // Pass parameters to the query
-  console.log(result)
+  // console.log(result)
 
   const rows = readTable('cats')
-  console.log(rows)
+  // console.log(rows)
   return database
 }

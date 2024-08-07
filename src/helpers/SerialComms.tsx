@@ -5,9 +5,10 @@ import { RawResults } from '@/types/interfaces'
 interface SerialCommsProps {
   setRawResults: Dispatch<SetStateAction<RawResults>>;
   writeCommand: string
+  startConnection: boolean
 }
 
-function SerialComms({ setRawResults, writeCommand}: SerialCommsProps) {
+function SerialComms({ setRawResults, writeCommand, startConnection}: SerialCommsProps) {
   const { pageNumber, setPageNumber } = useContext(SystemContext);
 
   const navigator = useRef(window.navigator);
@@ -37,7 +38,7 @@ function SerialComms({ setRawResults, writeCommand}: SerialCommsProps) {
           reader.current?.releaseLock()
           break
         }
-        console.log(value)
+        // console.log(value)
         if (value) {
           // Throw away start of test and start of new results lines
           if (value == newTest || value == newResult){
@@ -53,6 +54,8 @@ function SerialComms({ setRawResults, writeCommand}: SerialCommsProps) {
           // writeData()
           // writeData("< result" + terminator + "resistance_ok: pass" + terminator + ">" + terminator)
           // writeData("< result" + terminator + "batt_voltage_ok: pass" + terminator + ">" + terminator)
+          console.log("*_*_*_*_*_> ", writeCommand)
+          // writeData(writeCommand)
           setRawResults({results})
           results = []
           textStream = ""
@@ -64,18 +67,20 @@ function SerialComms({ setRawResults, writeCommand}: SerialCommsProps) {
     }
   }
 
-  function writeData(command: string) {
+  async function writeData(command: string) {
     // command = "< result" + terminator + "resistance_ok: pass" + terminator + ">" + terminator
     // console.log(command)
     // console.log(writer.current)
-    writer.current?.write(command)
+    if (command !== ""){
+      writer.current?.write(command)
+    }
   }
 
   const requestPort = async () => {
     try {
       const selectedPort = await navigator.current.serial.requestPort();
       const allPorts = await navigator.current.serial.getPorts();
-      console.log('All Ports:', allPorts)
+      // console.log('All Ports:', allPorts)
       await selectedPort.open({ baudRate: 115200 });
       setPort(selectedPort);
       setIsConnected(true);
@@ -86,7 +91,7 @@ function SerialComms({ setRawResults, writeCommand}: SerialCommsProps) {
       readableStreamClosed.current = selectedPort.readable.pipeTo(textDecoder.current.writable)
       reader.current = textDecoder.current.readable.getReader()
 
-      console.log("Port opened:", selectedPort);
+      // console.log("Port opened:", selectedPort);
     } catch (error) {
       console.error("Error opening serial port:", error);
     }
@@ -103,15 +108,21 @@ function SerialComms({ setRawResults, writeCommand}: SerialCommsProps) {
   }, [port, isConnected])
 
   useEffect(() => {
+    if (startConnection){
+      requestPort()
+    }
+  }, [startConnection])
+
+  useEffect(() => {
     console.log('writeCommand changed:', writeCommand);
     writeData(writeCommand);
   }, [writeCommand]);
 
   return (
     <div>
-      <div className="flex flex-row">
+      {/* <div className="flex flex-row">
         <button className="mt-40 w-1/2 bg-black mx-auto justify-center text-white text-2xl self-center rounded-2xl py-4 bg-gradient-to-r from-zip-light to-zip-dark hover:scale-105 uppercase  transition-transform" onClick={requestPort}>Connect tester</button>{" "}
-      </div>
+      </div> */}
     </div>
   );
 }

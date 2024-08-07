@@ -8,10 +8,12 @@ import CancelButton from '../../components/shared/CancelButton';
 import { SystemContext } from '../../context/SystemContext';
 import TestFeedbackWrapper from './TestFeedbackWrapper'
 import SerialComms from '../../helpers/SerialComms'
+// import {initialConnectAndRead, serialWrite} from '../../helpers/SerialComms2'
 import { UnitDetails, JobDetails, RawResults } from '@/types/interfaces'
 import processResults from '../../helpers/processResults'
 
 function TestingWrapper() {
+
   let componentBlock
     const terminator = "\r\n"
 
@@ -35,6 +37,7 @@ function TestingWrapper() {
   })
 
   const [writeCommand, setWriteCommand] = useState('')
+  const [startConnection, setStartConnection] = useState(false)
 
   switch (pageNumber) {
     case 0:
@@ -57,12 +60,12 @@ function TestingWrapper() {
       )
       break;
     case 2:
+      // console.log('starting serial comms')
+      // serialRead(setRawResults)
       componentBlock = (
         <>
           <h1 className='text-center text-3xl mt-16 mb-8'>Attach test jig to ZIP unit</h1>
           <h2 className='text-center text-xl '>Press Reset button on tester when ready</h2>
-          <p>{writeCommand}</p>
-          <SerialComms setRawResults={setRawResults} writeCommand={writeCommand} />
           {/* TODO: Tester to be automatically connected when being plugged in */}
           {/* Renderer might not be seeing the event, so might need to send it from ipcMain to ipcRenderer */}
         </>
@@ -85,22 +88,21 @@ function TestingWrapper() {
   },[rawResults])
 
   useEffect(() => {
-    console.log(writeCommand)
-  }, [writeCommand])
-  
-  function updateCmd1 () {
-    setWriteCommand("< result" + terminator + "resistance_ok: pass" + terminator + ">" + terminator)
-  }
-  function updateCmd2 () {
-    setWriteCommand("< result" + terminator + "batt_voltage_ok: pass" + terminator + ">" + terminator)
-  }
-
+    if (pageNumber == 2){
+      setStartConnection(true)
+    }
+  }, [pageNumber])
 
   return (
     <div className="w-full h-screen flex flex-col justify-center">
+      <SerialComms setRawResults={setRawResults} writeCommand={writeCommand} startConnection={startConnection} />
       {componentBlock}
-      <button onClick={updateCmd1}>Update resistance</button>
-      <button onClick={updateCmd2}>Update battery </button>
+      <button onClick={() => 
+        setWriteCommand("< result" + terminator + "resistance_ok: pass" + terminator + ">" + terminator)
+      }> Send Res Command</button>
+      <button onClick={() => 
+        setWriteCommand("< result" + terminator + "batt_voltage_ok: pass" + terminator + ">" + terminator)
+      }> Send Batt Command</button>
     </div>
   )
 }
