@@ -43,3 +43,18 @@ export interface TestParameters {
   status: "pass" | "fail" | "unknown" | null
 }
 
+export interface SystemContextProps {
+  activeJob: "select" | "test" | "assemble"
+  setActiveJob: Dispatch<SetStateAction<"select" | "test" | "assemble">>
+  pageNumber: number;
+  setPageNumber: Dispatch<SetStateAction<number>>
+}
+
+export interface ProcessResultsProps {
+  results: string[] | null
+  setUnitDetails: Dispatch<SetStateAction<UnitDetails>>
+}
+
+export interface setWriteCommand {
+  setWriteCommand: Dispatch<SetStateAction<string>>
+}

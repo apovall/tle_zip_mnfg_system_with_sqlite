@@ -1,11 +1,6 @@
-import { createContext, Dispatch, SetStateAction, FC, useState, ReactNode } from 'react';
+import { createContext, FC, useState, ReactNode } from 'react';
+import { SystemContextProps } from '@/types/interfaces';
 
-interface SystemContextProps {
-  activeJob: "select" | "test" | "assemble"
-  setActiveJob: Dispatch<SetStateAction<"select" | "test" | "assemble">>
-  pageNumber: number;
-  setPageNumber: Dispatch<SetStateAction<number>>
-}
 
 export const SystemContext = createContext<SystemContextProps>({
   activeJob: "select",

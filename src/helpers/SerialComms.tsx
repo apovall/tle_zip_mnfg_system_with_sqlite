@@ -1,13 +1,13 @@
-import React, { useContext, useEffect, useState, useRef, Dispatch, SetStateAction } from "react";
+import { useContext, useEffect, useState, useRef, Dispatch, SetStateAction } from "react";
 import { SystemContext } from "../context/SystemContext";
-import NextButton from "../components/shared/NextButton"
 import { RawResults } from '@/types/interfaces'
 
 interface SerialCommsProps {
   setRawResults: Dispatch<SetStateAction<RawResults>>;
+  writeCommand: string
 }
 
-function SerialComms({ setRawResults }: SerialCommsProps) {
+function SerialComms({ setRawResults, writeCommand}: SerialCommsProps) {
   const { pageNumber, setPageNumber } = useContext(SystemContext);
 
   const navigator = useRef(window.navigator);
@@ -21,12 +21,12 @@ function SerialComms({ setRawResults }: SerialCommsProps) {
 
   const [port, setPort] = useState(null);
   const [isConnected, setIsConnected] = useState(false);
+
   const newTest = "< start" + terminator + "mode: 2" + terminator + ">" + terminator
   const newResult = "< result" + terminator
 
   async function readSerial() {
     let textStream = ""
-
     let results
 
     try {
@@ -37,7 +37,7 @@ function SerialComms({ setRawResults }: SerialCommsProps) {
           reader.current?.releaseLock()
           break
         }
-
+        console.log(value)
         if (value) {
           // Throw away start of test and start of new results lines
           if (value == newTest || value == newResult){
@@ -50,6 +50,9 @@ function SerialComms({ setRawResults }: SerialCommsProps) {
         results = textStream.split(`${terminator}`);
 
         if (results.at(-1) == "" && results.at(-2) == ">"){
+          // writeData()
+          // writeData("< result" + terminator + "resistance_ok: pass" + terminator + ">" + terminator)
+          // writeData("< result" + terminator + "batt_voltage_ok: pass" + terminator + ">" + terminator)
           setRawResults({results})
           results = []
           textStream = ""
@@ -61,29 +64,10 @@ function SerialComms({ setRawResults }: SerialCommsProps) {
     }
   }
 
-  function writeData() {
-    let command = "< start" + terminator + "mode: 2" + terminator + ">" + terminator
-    console.log(command)
-    // const cmdElement = document.getElementById("command")
-    // let command = cmdElement.value
-    // if (command == null || command == "") {
-    //   return
-    // }
-    // appendNewDataRow([command], 'write')
-    // cmdElement.value = ""
-    writer.current?.write(command)
-  }
-
-  function updateResults() {
-    let command = terminator + "< result" + terminator + `resistance_ok: pass` + terminator + ">" + terminator
-    console.log(command)
-    // const cmdElement = document.getElementById("command")
-    // let command = cmdElement.value
-    // if (command == null || command == "") {
-    //   return
-    // }
-    // appendNewDataRow([command], 'write')
-    // cmdElement.value = ""
+  function writeData(command: string) {
+    // command = "< result" + terminator + "resistance_ok: pass" + terminator + ">" + terminator
+    // console.log(command)
+    // console.log(writer.current)
     writer.current?.write(command)
   }
 
@@ -109,27 +93,25 @@ function SerialComms({ setRawResults }: SerialCommsProps) {
   };
   
   useEffect(() => {
+    console.log('In here due to changes in port & isConnected')
     if (port !== null){
       readSerial()
     }
-
     if (isConnected){
       setPageNumber(pageNumber + 1)
     }
-    
   }, [port, isConnected])
+
+  useEffect(() => {
+    console.log('writeCommand changed:', writeCommand);
+    writeData(writeCommand);
+  }, [writeCommand]);
 
   return (
     <div>
       <div className="flex flex-row">
         <button className="mt-40 w-1/2 bg-black mx-auto justify-center text-white text-2xl self-center rounded-2xl py-4 bg-gradient-to-r from-zip-light to-zip-dark hover:scale-105 uppercase  transition-transform" onClick={requestPort}>Connect tester</button>{" "}
       </div>
-      {/* <div>
-        <button onClick={writeData}>Start</button>
-      </div>
-      <div>
-        <button onClick={updateResults}>Resistance OK</button>
-      </div> */}
     </div>
   );
 }

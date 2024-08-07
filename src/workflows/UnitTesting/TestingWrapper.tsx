@@ -13,6 +13,7 @@ import processResults from '../../helpers/processResults'
 
 function TestingWrapper() {
   let componentBlock
+    const terminator = "\r\n"
 
   const {pageNumber} = useContext(SystemContext);
   const [jobDetails, setJobDetails] = useState<JobDetails>({
@@ -32,6 +33,8 @@ function TestingWrapper() {
     vcell_loaded: null,
     vcell_unloaded: null,
   })
+
+  const [writeCommand, setWriteCommand] = useState('')
 
   switch (pageNumber) {
     case 0:
@@ -58,7 +61,8 @@ function TestingWrapper() {
         <>
           <h1 className='text-center text-3xl mt-16 mb-8'>Attach test jig to ZIP unit</h1>
           <h2 className='text-center text-xl '>Press Reset button on tester when ready</h2>
-          <SerialComms setRawResults={setRawResults}/>
+          <p>{writeCommand}</p>
+          <SerialComms setRawResults={setRawResults} writeCommand={writeCommand} />
           {/* TODO: Tester to be automatically connected when being plugged in */}
           {/* Renderer might not be seeing the event, so might need to send it from ipcMain to ipcRenderer */}
         </>
@@ -77,17 +81,26 @@ function TestingWrapper() {
   }
 
   useEffect(() => {
-    processResults(rawResults, {setUnitDetails})
+    processResults(rawResults, {setUnitDetails}, {setWriteCommand})
   },[rawResults])
 
-  // useEffect(() => {
-  //   console.log(unitDetails)
-  // }, [unitDetails])
+  useEffect(() => {
+    console.log(writeCommand)
+  }, [writeCommand])
+  
+  function updateCmd1 () {
+    setWriteCommand("< result" + terminator + "resistance_ok: pass" + terminator + ">" + terminator)
+  }
+  function updateCmd2 () {
+    setWriteCommand("< result" + terminator + "batt_voltage_ok: pass" + terminator + ">" + terminator)
+  }
 
 
   return (
     <div className="w-full h-screen flex flex-col justify-center">
       {componentBlock}
+      <button onClick={updateCmd1}>Update resistance</button>
+      <button onClick={updateCmd2}>Update battery </button>
     </div>
   )
 }
