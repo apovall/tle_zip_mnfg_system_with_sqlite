@@ -1,6 +1,6 @@
 {
-  "name": "tle_zip_mnfg_test_system_ui",
-  "description": "ZIP Manufacturing Test System User Interface",
+  "name": "zip-mnfg-test-system-ui",
+  "description": "zip-mnfg-test-system-ui",
   "homepage": "https://zip.org.nz/",
   "license": "UNLICENSED",
   "author": {
@@ -25,7 +25,7 @@
   "private": true,
   "scripts": {
     "dev": "vite",
-    "build": "vite build && electron-builder",
+    "buildMac": "vite build && electron-builder",
     "buildDeb": "vite build && electron-builder --linux --x64",
     "rebuild": "electron rebuild.js",
     "postinstall": "npm run rebuild"
@@ -57,9 +57,7 @@
     "copyright": "Copyright © 2024 Zero Invasive Predators Limited",
     "linux": {
       "target": [
-        "AppImage",
-        "deb",
-        "snap"
+        "AppImage"
       ]
     }
   }

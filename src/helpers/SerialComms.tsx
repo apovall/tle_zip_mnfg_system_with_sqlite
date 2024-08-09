@@ -40,6 +40,7 @@ function SerialComms({ setRawResults, writeCommand, startConnection}: SerialComm
         }
         // console.log(value)
         if (value) {
+          console.log(value)
           // Throw away start of test and start of new results lines
           if (value == newTest || value == newResult){
             textStream = ""

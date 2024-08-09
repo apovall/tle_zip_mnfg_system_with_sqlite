@@ -60,7 +60,7 @@ function createWindow() {
       const selectedPort = portList.find((device) => {
         console.log("device", device);
         console.log("port list", portList);
-        return device.displayName == "STM32X";
+        return device.displayName == "H2Z-Tester";
       });
       if (!selectedPort) {
         // console.log("Port not selected");
@@ -93,8 +93,8 @@ function createWindow() {
     win.loadURL(process.env.VITE_DEV_SERVER_URL);
     win.webContents.openDevTools();
   } else {
-    // win.loadFile('dist/index.html')
-    win.loadFile(path.join(process.env.DIST, "index.html"));
+    win.loadFile('dist/index.html')
+    // win.loadFile(path.join(process.env.DIST, "index.html"));
   }
 }
 

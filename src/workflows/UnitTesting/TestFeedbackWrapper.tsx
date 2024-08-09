@@ -23,6 +23,11 @@ function TestFeedbackWrapper({ details }: UnitDetailsProps) {
           
         />
         <TestParameterFeedback
+          text="Resistance"
+          value={details["resistance"]}
+          status={null}
+        />
+        <TestParameterFeedback
           text="Resistance OK"
           value={null}
           status={details["resistance_ok"]}

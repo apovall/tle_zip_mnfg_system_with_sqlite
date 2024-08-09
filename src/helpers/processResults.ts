@@ -17,6 +17,7 @@ function processResults(
     results.results?.forEach((item) => {
       if (!["< result", ">", ""].includes(item)) {
         let splitResult = item.split(": ");
+        // console.log(splitResult)
         cleanedResults = {...cleanedResults, [splitResult[0]]: splitResult[1] }
 
         if (splitResult[1] == 'fail'){

@@ -18,7 +18,7 @@ function TestingWrapper() {
   let componentBlock
   let baseUnitDetails:UnitDetails = {
     batchNumber: null,
-    resistorLoaded: null,
+    resistorLoaded: 3600,
     qrCode: undefined,
     result: null,
     batt_contact_ok: null,
@@ -48,7 +48,7 @@ function TestingWrapper() {
       componentBlock = (
         <>
           <TextInput label="Batch Name / Number" setInputValues={setUnitDetails} target="batchNumber" value={unitDetails["batchNumber"]}/>
-          <ResistorSelect label="Resistor Loaded"  setInputValues={setUnitDetails} target="resistorLoaded" value={unitDetails["resistorLoaded"]} />
+          <ResistorSelect label="Resistor Loaded" unitDetails={unitDetails} setInputValues={setUnitDetails} target="resistorLoaded" value={unitDetails["resistorLoaded"]} />
           <NextButton text="Start tests" isDisabled={unitDetails["batchNumber"] == null || unitDetails["resistorLoaded"] == null} />
           <CancelButton text="Cancel Job" />
         </>

@@ -9,11 +9,12 @@ import { UnitDetails } from "@/types/interfaces";
 interface ResistorSelectProps {
   label: string;
   setInputValues: Dispatch<SetStateAction<UnitDetails>>;
+  unitDetails: UnitDetails;
   target: string;
   value: number | null;
 }
 
-function ResistorSelect({ label, setInputValues, target }: ResistorSelectProps) {
+function ResistorSelect({ label, setInputValues, target, unitDetails }: ResistorSelectProps) {
   return (
     <div className="w-1/2 text-right mx-auto my-4 self-center">
       <div className="flex flex-row justify-center">
@@ -30,12 +31,12 @@ function ResistorSelect({ label, setInputValues, target }: ResistorSelectProps) 
             });
           }}
         >
-          <option value="0">0</option>
-          <option value="3600">3.6K</option>
-          <option value="4700">4.7K</option>
-          <option value="6490">6.49K</option>
-          <option value="8200">8.2K</option>
-          <option value="10000">10K</option>
+          <option value="3600" selected={unitDetails.resistorLoaded?.toString() == `3600` ? true : false}>3.6K</option>
+          <option value="4700" selected={unitDetails.resistorLoaded?.toString() == `4700` ? true : false}>4.7K</option>
+          <option value="6490" selected={unitDetails.resistorLoaded?.toString() == `6490` ? true : false}>6.49K</option>
+          <option value="8200" selected={unitDetails.resistorLoaded?.toString() == `8200` ? true : false}>8.2K</option>
+          <option value="10000" selected={unitDetails.resistorLoaded?.toString() == `10000` ? true : false}>10K</option>
+          <option value="30000" selected={unitDetails.resistorLoaded?.toString() == `30000` ? true : false}>30K</option>
         </select>
       </div>
     </div>
