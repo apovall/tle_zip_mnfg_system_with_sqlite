@@ -19,6 +19,8 @@ function processResults(
         let splitResult = item.split(": ");
         // console.log(splitResult)
         cleanedResults = {...cleanedResults, [splitResult[0]]: splitResult[1] }
+        console.log('cleaned results')
+        console.log(cleanedResults)
 
         if (splitResult[1] == 'fail'){
           action = 'fail'

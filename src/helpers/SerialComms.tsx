@@ -28,34 +28,50 @@ function SerialComms({ setRawResults, writeCommand, startConnection}: SerialComm
 
   async function readSerial() {
     let textStream = ""
-    let results
+    let results = []
 
     try {
       while (true) {
         const { value, done } = await reader.current?.read()
-
+        
         if (done) {
+          console.log("done")
           reader.current?.releaseLock()
           break
         }
         // console.log(value)
         if (value) {
-          console.log(value)
-          // Throw away start of test and start of new results lines
-          if (value == newTest || value == newResult){
-            textStream = ""
-          } else {
-            textStream += value;
-            // console.log(textStream)
-          }
+          textStream += value;
         }
 
+        // Split results based on a new test sequence being observed
+        if (textStream.includes(newTest)){
+          let split = textStream.split(newTest)
+          textStream = split[1]
+        }
+       
         results = textStream.split(`${terminator}`);
 
         if (results.at(-1) == "" && results.at(-2) == ">"){
           setRawResults({results})
           results = []
           textStream = ""
+        }
+
+              // Check if the port supports the getSignals method
+        if (port?.getSignals) {
+          // Retrieve the control signals.
+          const signals = await port.getSignals();
+
+          console.log(signals)
+          
+          // Log the signals to the console.
+          console.log('CTS:', signals.clearToSend);
+          console.log('DSR:', signals.dataSetReady);
+          console.log('DCD:', signals.dataCarrierDetect);
+          console.log('RI:', signals.ringIndicator);
+        } else {
+          console.log("The port does not support the getSignals method.");
         }
       }
     } catch (error) {
@@ -80,11 +96,14 @@ function SerialComms({ setRawResults, writeCommand, startConnection}: SerialComm
       setPort(selectedPort);
       setIsConnected(true);
 
+
       writableStreamClosed.current = textEncoder.current.readable.pipeTo(selectedPort.writable)
       writer.current = textEncoder.current.writable.getWriter()
 
       readableStreamClosed.current = selectedPort.readable.pipeTo(textDecoder.current.writable)
       reader.current = textDecoder.current.readable.getReader()
+
+  
 
     } catch (error) {
       console.error("Error opening serial port:", error);

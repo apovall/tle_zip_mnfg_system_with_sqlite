@@ -41,6 +41,7 @@ TOOD: Create build script that builds, and also moves bashscript into `dist` fol
 Changes
 - No timeout on success or failure. Use enter button to proceed.
 - proceed on enter for any text input
+- Pause on results screen on fail - press enter to continue.
 - If resistance has an error, it will produce a 'resistance error' code.
 - Serial comms
   - If device ID is known https://www.electronjs.org/docs/latest/api/session#event-select-serial-port
