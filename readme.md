@@ -24,18 +24,18 @@ TOOD: Create build script that builds, and also moves bashscript into `dist` fol
 
 # TODO:
 - Fill in readme.
-- Make so that QR code scanner commits / submits on new line.
-- Currently 'pass / fail' indication isn't showing correctly
+- Fix up pathing in linux distribution
 - More graceful serial comms handling, especially on disconnect and reconnect
-- TS / General tidy up
+- Currently 'pass / fail' indication isn't showing correctly
 - Debian / Ubuntu testing.
 - Move configuration to single file
-- What does this mean? `if v_cell_unloaded is OK but have no resistance`
 - Let Tim know what I'll be saving to SQLite
+- Write up better doucmentation in linux distribution
+- [x] Make so that QR code scanner commits / submits on new line.
+- TS / General tidy up
+- What does this mean? `if v_cell_unloaded is OK but have no resistance`
 - Send first command as /n on first connect => What was reason for this?
 - More testing with other units, especially faulty ones.
-- Fix up pathing in linux distribution
-- Write up better doucmentation in linux distribution
 - Update output path in main.ts
 
 Changes
