@@ -19,7 +19,6 @@ function QRCodeInput({label, setInputValues, target, value}:UnitInputProps) {
         <input autoFocus id={target} type={target == "resistorLoaded" ? "number" : "text" } className='basis-2/3 border-2 border-zip-dark rounded-lg p-4 self-center' value={value ?? ""}
         onKeyDown={async (e) => {
           if (e.key == "Enter" && value){
-            console.log('setting')
             await new Promise(resolve => setTimeout(() => {
               setPageNumber(pageNumber + 1)
             }, 800));

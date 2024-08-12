@@ -12,19 +12,43 @@ TOOD: Create build script that builds, and also moves bashscript into `dist` fol
   - Run `hostname -I` on laptop
   - Connect to smb / samba via smb://<hostip>/sambashare
 - Drop `dist` folder in `sambashare`
-- `mv /home/zip/sambashare/dist/zip-mnfg-test-system-ui.AppImage /home/zip/zip-test-system/zip-mnfg-test-system-ui/AppImage`
-- `chmod a+x ./zip-mnfg-test-system-ui.AppImage`
-- `./zip-mnfg-test-system-ui.AppImage --appImage-extract`
+- `cp /home/zip/sambashare/dist/zip-mnfg-test-system-ui-0.1.0.AppImage /home/zip/zip-test-system/zip-mnfg-test-system-ui.AppImage`
+- `cd /home/zip/zip-test-system/`
+- 'rm -rf squashfs-root'
+- ~~`chmod a+x ./zip-mnfg-test-system-ui.AppImage`~~
+- `./zip-mnfg-test-system-ui.AppImage --appimage-extract`
 - `cd squashfs-root/`
 - `sudo chown root:root chrome-sandbox`
 - `sudo chmod 4755 chrome-sandbox`
+  - Can also run the chown and chmod commands on the .AppImage file directly
 - `cd ..`
-- `./squashfs-root/AppRun`
+- `./AppRun`
+
+## new version
+- Drop `dist` folder in `sambashare`
+- Move entire dist folder
+- `cp /home/zip/sambashare/dist/ /home/zip/zip-test-system/zip-mnfg-test-system-ui.AppImage`
+- `cd /home/zip/zip-test-system/`
+- 'rm -rf squashfs-root'
+- `sudo chmod a+x zip-mnfg-test-system-ui-0.1.0.AppImage`
+- `sudo chown root:root zip-mnfg-test-system-ui-0.1.0.AppImage`
+- `sudo chmod 4755 zip-mnfg-test-system-ui-0.1.0.AppImage`
+- `./zip-mnfg-test-system-ui.AppImage --appImage-extract`
+- `cd squashfs-root/`
+  - Can also run the chown and chmod commands on the .AppImage file directly
+- `cd ..`
+- `./AppRun`
+
+
 
 
 # TODO:
 - Fill in readme.
 - Fix up pathing in linux distribution
+- No timeout on success or failure. Use enter button to proceed.
+- proceed on enter for any text input
+- Pause on results screen on fail - press enter to continue.
+- If resistance has an error, it will produce a 'resistance error' code.
 - More graceful serial comms handling, especially on disconnect and reconnect
 - Currently 'pass / fail' indication isn't showing correctly
 - Debian / Ubuntu testing.
@@ -38,11 +62,6 @@ TOOD: Create build script that builds, and also moves bashscript into `dist` fol
 - More testing with other units, especially faulty ones.
 - Update output path in main.ts
 
-Changes
-- No timeout on success or failure. Use enter button to proceed.
-- proceed on enter for any text input
-- Pause on results screen on fail - press enter to continue.
-- If resistance has an error, it will produce a 'resistance error' code.
 - Serial comms
   - If device ID is known https://www.electronjs.org/docs/latest/api/session#event-select-serial-port
 

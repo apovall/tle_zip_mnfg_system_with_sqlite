@@ -10,7 +10,7 @@ const TAG = '[better-sqlite3]'
 let database: Database.Database
 const tableName = 'zip_h2_manufacturing_test'
 
-export function createTable(tableName) {
+export function createTable(tableName:string) {
   const createTable = database.prepare(`
     CREATE TABLE IF NOT EXISTS ${tableName} (
       id INTEGER PRIMARY KEY AUTOINCREMENT,

@@ -12,6 +12,9 @@ process.env["ELECTRON_DISABLE_SECURITY_WARNINGS"] = "true";
 // │ ├── ...other-static-files-from-public
 // │
 process.env.DIST = path.join(__dirname, "../dist");
+process.env.NODE_ENV = app.isPackaged 
+  ? "production"
+  : "development"
 process.env.VITE_PUBLIC = app.isPackaged
   ? process.env.DIST
   : path.join(process.env.DIST, "../public");
@@ -93,7 +96,11 @@ function createWindow() {
     win.loadURL(process.env.VITE_DEV_SERVER_URL);
     win.webContents.openDevTools();
   } else {
-    win.loadFile('dist/index.html')
+    // TODO: ISSUE is pathing in here
+    const appPath = app.isPackaged
+    ? path.join(process.resourcesPath, 'app.asar/dist/')
+    : path.join(__dirname);
+    win.loadFile(path.join(appPath, 'index.html'))
     // win.loadFile(path.join(process.env.DIST, "index.html"));
   }
 }

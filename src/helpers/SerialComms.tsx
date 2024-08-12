@@ -17,10 +17,10 @@ function SerialComms({ setRawResults, writeCommand, startConnection}: SerialComm
   const writableStreamClosed = useRef<Promise<void> | null>(null)
   const textDecoder = useRef(new TextDecoderStream())
   const reader = useRef<ReadableStreamDefaultReader<string> | null>(null)
-  const readableStreamClosed = useRef(null)
+  const readableStreamClosed = useRef<Promise<void> | null>(null)
   const terminator = "\r\n"
 
-  const [port, setPort] = useState(null);
+  const [port, setPort] = useState<SerialPort | null>(null);
   // const [isConnected, setIsConnected] = useState(false);
 
   const newTest = "< start" + terminator + "mode: 2" + terminator + ">" + terminator
@@ -32,17 +32,28 @@ function SerialComms({ setRawResults, writeCommand, startConnection}: SerialComm
 
     try {
       while (true) {
-        const { value, done } = await reader.current?.read()
+        // const { value, done } = await reader.current?.read()
+        const readStream = await reader.current?.read()
+
+        if (readStream && !readStream.done){
+          const { value } = readStream
+
+          if (value) {
+            textStream += value;
+          }
+        }
         
-        if (done) {
+
+
+        if (readStream && readStream.done) {
           console.log("done")
           reader.current?.releaseLock()
           break
         }
         // console.log(value)
-        if (value) {
-          textStream += value;
-        }
+        // if (value) {
+        //   textStream += value;
+        // }
 
         // Split results based on a new test sequence being observed
         if (textStream.includes(newTest)){
@@ -56,22 +67,6 @@ function SerialComms({ setRawResults, writeCommand, startConnection}: SerialComm
           setRawResults({results})
           results = []
           textStream = ""
-        }
-
-              // Check if the port supports the getSignals method
-        if (port?.getSignals) {
-          // Retrieve the control signals.
-          const signals = await port.getSignals();
-
-          console.log(signals)
-          
-          // Log the signals to the console.
-          console.log('CTS:', signals.clearToSend);
-          console.log('DSR:', signals.dataSetReady);
-          console.log('DCD:', signals.dataCarrierDetect);
-          console.log('RI:', signals.ringIndicator);
-        } else {
-          console.log("The port does not support the getSignals method.");
         }
       }
     } catch (error) {

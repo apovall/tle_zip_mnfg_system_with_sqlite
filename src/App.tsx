@@ -12,7 +12,8 @@ function App() {
 
   return (
     <div className="w-full">
-      <img src="/images/zip_banner.png" alt="ZIP Banner" />
+      {/* <img src="/images/zip_banner.png" alt="ZIP Banner" /> */}
+      <img src={`${process.env.NODE_ENV === 'production' ? './images/zip_banner.png' : '/images/zip_banner.png'}`} alt="ZIP Banner" />
 
       {systemContext.activeJob == "select" ? (
         <>

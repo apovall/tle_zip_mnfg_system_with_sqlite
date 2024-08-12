@@ -7,7 +7,7 @@
     "name": "Alan Povall / Product Nimbus",
     "url": "https://alan-povall.com",
     "email": "hi@alan-povall.com"
-  },  
+  },
   "contributors": [
     {
       "name": "Tim Lamborn / TL Embedded Limited",
@@ -17,7 +17,7 @@
       "name": "Zero Invasive Predators (ZIP) Limited",
       "url": "https://zip.org.nz/"
     }
-   ],
+  ],
   "repository": "https://github.com/apovall/tle_zip_mnfg_system_with_sqlite",
   "email": "hi@alan-povall.com",
   "version": "0.1.0",
@@ -25,13 +25,15 @@
   "private": true,
   "scripts": {
     "dev": "vite",
-    "buildMac": "vite build && electron-builder",
-    "buildDeb": "vite build && electron-builder --linux --x64",
+    "buildVite": "vite build",
+    "buildMac": "vite build && electron-builder build --mac --x64 --config ./electron-builder.json",
+    "buildDeb": "vite build && electron-builder --linux --x64 --config ./electron-builder.json",
     "rebuild": "electron rebuild.js",
     "postinstall": "npm run rebuild"
   },
   "devDependencies": {
     "@types/better-sqlite3": "^7.6.11",
+    "@types/dom-serial": "^1.0.6",
     "@types/node": "^20.14.10",
     "@types/react": "^18.3.3",
     "@types/react-dom": "^18.3.0",
@@ -47,13 +49,15 @@
     "vite-plugin-electron-renderer": "^0.14.5"
   },
   "dependencies": {
+    "@vitejs/plugin-react": "^4.3.1",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-icons": "^5.2.1"
   },
   "build": {
+    "asar": true,
     "appId": "com.product_nimbus.zip_manufacturing_test_interface",
-    "productName": "ZIP Manufacturing Test System User Interface",
+    "productName": "zip-mnfg-test-system-ui",
     "copyright": "Copyright © 2024 Zero Invasive Predators Limited",
     "linux": {
       "target": [

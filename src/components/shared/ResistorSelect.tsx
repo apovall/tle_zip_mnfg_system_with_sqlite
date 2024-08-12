@@ -36,7 +36,7 @@ function ResistorSelect({ label, setInputValues, target, unitDetails }: Resistor
           <option value="6490" selected={unitDetails.resistorLoaded?.toString() == `6490` ? true : false}>6.49K</option>
           <option value="8200" selected={unitDetails.resistorLoaded?.toString() == `8200` ? true : false}>8.2K</option>
           <option value="10000" selected={unitDetails.resistorLoaded?.toString() == `10000` ? true : false}>10K</option>
-          <option value="30000" selected={unitDetails.resistorLoaded?.toString() == `30000` ? true : false}>30K</option>
+          <option value="33000" selected={unitDetails.resistorLoaded?.toString() == `33000` ? true : false}>33K</option>
         </select>
       </div>
     </div>

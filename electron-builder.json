@@ -1,18 +1,16 @@
-/**
- * @see https://www.electron.build/configuration/configuration
- */
 {
   "appId": "com.product_nimbus.zip_manufacturing_test_interface",
-  "asar": false,
-  "productName": "ZIP Manufacturing Test System User Interface",
+  "asar": true,
+  "productName": "zip-mnfg-test-system-ui",
   "copyright": "Copyright © 2022 ${author}",
   "directories": {
-    "output": "release/${version}"
+    "output": "release/"
   },
   "files": [
     "dist",
     "dist-electron",
-    "dist-native"
+    "dist-native",
+    "public/images/**/*"
   ],
   "win": {
     "target": [
@@ -34,7 +32,7 @@
     "artifactName": "${productName}-Mac-${version}-Installer.${ext}"
   },
   "linux": {
-    "target": ["AppImage", "deb", "snap"],
+    "target": ["AppImage"],
     "artifactName": "${productName}-Linux-${version}.${ext}"
   }
 }
