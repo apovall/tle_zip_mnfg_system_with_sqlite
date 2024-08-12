@@ -54,8 +54,11 @@ function TestFeedbackWrapper({ details }: UnitDetailsProps) {
         />
       </div>
       <div className="border-l border-disabled h-full mx-20"></div>
-      <InstructionBlock status={details["action"]} />
-      {['fail', 'pass'].includes(details["action"]) ? <p className="py-8">Saving to database...</p> : <></>}
+      <div>
+        <InstructionBlock status={details["action"]} />
+      {['fail', 'pass'].includes(details["action"]) ? <p className="py-8">Saving results to database...</p> : <></>}
+
+      </div>
       
     </div>
   );

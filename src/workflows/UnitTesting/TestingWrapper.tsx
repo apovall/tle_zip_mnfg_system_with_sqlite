@@ -94,7 +94,6 @@ function TestingWrapper() {
 
   useEffect(() => {
     const finaliseResults = async () => {
-      console.log('saving to database')
       saveUnitResults(unitDetails)
       baseUnitDetails = {
         ...baseUnitDetails, 

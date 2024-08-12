@@ -48,26 +48,24 @@ If you can't read serial comms when the tester is plugged in, it's most likely b
 
 
 # TODO:
+- Save batch 
+- Save loaded resistance
+- Save stamp
+- More graceful serial comms handling, especially on disconnect and reconnect
+- Windows build
 - Fill in readme.
   - Write build steps on Linux (or look at Github actions)
-  - 
+  - Write up better doucmentation in linux distribution
 - [x] Fix up pathing in linux distribution
-- No timeout on success or failure. Use enter button to proceed.
-- proceed on enter for any text input
-- Pause on results screen on fail - press enter to continue.
+- [x] No timeout on success or failure. Use enter button to proceed.
+- [x] proceed on enter for any text input
 - If resistance has an error, it will produce a 'resistance error' code.
-- More graceful serial comms handling, especially on disconnect and reconnect
-- Currently 'pass / fail' indication isn't showing correctly
-- Debian / Ubuntu testing.
+- [x] Currently 'pass / fail' indication isn't showing correctly
+- [x] Debian / Ubuntu testing.
 - Move configuration to single file
-- Let Tim know what I'll be saving to SQLite
-- Write up better doucmentation in linux distribution
+- [x] Let Tim know what I'll be saving to SQLite
 - [x] Make so that QR code scanner commits / submits on new line.
 - TS / General tidy up
-- What does this mean? `if v_cell_unloaded is OK but have no resistance`
-- Send first command as /n on first connect => What was reason for this?
-- More testing with other units, especially faulty ones.
-- Update output path in main.ts
 
 - Serial comms
   - If device ID is known https://www.electronjs.org/docs/latest/api/session#event-select-serial-port

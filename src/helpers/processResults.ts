@@ -19,12 +19,10 @@ function processResults(
         let splitResult = item.split(": ");
         // console.log(splitResult)
         cleanedResults = {...cleanedResults, [splitResult[0]]: splitResult[1] }
-        console.log('cleaned results')
-        console.log(cleanedResults)
 
         if (splitResult[1] == 'fail'){
           action = 'fail'
-        }
+        } 
 
         // if (splitResult[1].includes(" mV")){
         //   // splitResult[1] = splitResult[1].replace(" mV", "");
@@ -46,9 +44,12 @@ function processResults(
     });
 
     sendResult(setWriteCommand.setWriteCommand, "resistance_ok", resCheckResult)
-    // Update resistance & battery 
-    // cleanedResults = {...cleanedResults, resistance_ok: resCheckResult, batt_voltage_ok: battCheckResult}
     let finalOutcome = finalCheck(cleanedResults)
+    console.log('final outcome')
+    console.log(finalOutcome)
+    if (finalOutcome !== 'unknown'){
+      action = finalOutcome
+    }
     cleanedResults = {...cleanedResults, result: finalOutcome, action: action}
     setUnitDetails.setUnitDetails((prev) => {
       return {...prev, ...cleanedResults}

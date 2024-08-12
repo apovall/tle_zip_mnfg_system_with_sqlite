@@ -35,7 +35,7 @@ function CompleteTestButton({
 
   return (
     <button
-      className={`mt-40 w-1/2 text-white text-2xl self-center rounded-2xl py-4 ${styling} uppercase  transition-transform`}
+      className={`mt-10 w-1/2 text-white text-2xl self-center rounded-2xl py-4 ${styling} uppercase  transition-transform`}
       disabled={isDisabled}
       ref={focusButton}
       onKeyDown={(e) => {
