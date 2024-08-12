@@ -24,6 +24,30 @@ TOOD: Create build script that builds, and also moves bashscript into `dist` fol
 - `cd ..`
 - `./AppRun`
 
+## serial port permissions on Ubuntu
+If you can't read serial comms when the tester is plugged in, it's most likely being denied access by the syste itself.
+1. Find serial port name. Run .AppImage above (without sudo but with --no-sandbox), in order to get  terminal output
+2. Look for device name and associated port
+3. set `sudo chmod 666 /dev/<portname>`
+
+
+## Building for x86_64 Linux on Mac ARM64
+- Use terminal with Rosetta 2 enabled to access x86_64
+- Install x86_64 version of Node 22
+  - arch -x86_64 /bin/bash -c "source $HOME/.nvm/nvm.sh && nvm install 22 && nvm use 22"
+  - `nvm use 22`
+  - `node -p "process.arch"`
+- Delete node_modules folder
+- npm install
+- Should see node-gyp output containing:
+```
+  gyp info it worked if it ends with ok
+  gyp info using node-gyp@10.1.0
+  *gyp info using node@22.6.0 | darwin | x64*
+```
+- `npm run buildDeb`
+- Transfer `release`  folder to Ubuntu machine, override existing folder
+
 ## new version
 - Drop `dist` folder in `sambashare`
 - Move entire dist folder

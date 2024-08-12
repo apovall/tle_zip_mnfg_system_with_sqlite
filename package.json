@@ -26,8 +26,8 @@
   "scripts": {
     "dev": "vite",
     "buildVite": "vite build",
-    "buildMac": "vite build && electron-builder build --mac --x64 --config ./electron-builder.json",
-    "buildDeb": "vite build && electron-builder --linux --x64 --config ./electron-builder.json",
+    "buildMac": "vite build && electron-builder build --mac --config ./electron-builder.json",
+    "buildDeb": "vite build && electron-builder --linux --config ./electron-builder.json",
     "rebuild": "electron rebuild.js",
     "postinstall": "npm run rebuild"
   },
