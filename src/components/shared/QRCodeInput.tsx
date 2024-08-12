@@ -21,12 +21,11 @@ function QRCodeInput({label, setInputValues, target, value}:UnitInputProps) {
           if (e.key == "Enter" && value){
             await new Promise(resolve => setTimeout(() => {
               setPageNumber(pageNumber + 1)
-            }, 800));
+            }, 400));
             // setPageNumber(pageNumber + 1)
           }
         }}
         onChange={(e) => {
-          let value = e.target.value
           setInputValues((prev) => {
             return {...prev, [target]: e.target.value}
           })

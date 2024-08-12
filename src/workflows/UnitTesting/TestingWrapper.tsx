@@ -5,11 +5,11 @@ import QRCodeInput from "../../components/shared/QRCodeInput"
 import NextButton from "../../components/shared/NextButton"
 import BackButton from '../../components/shared/BackButton'
 import CancelButton from '../../components/shared/CancelButton';
+import CompleteTestButton from '../../components/shared/CompleteTestButton';
 import { SystemContext } from '../../context/SystemContext';
 import TestFeedbackWrapper from './TestFeedbackWrapper'
 import SerialComms from '../../helpers/SerialComms'
-// import {initialConnectAndRead, serialWrite} from '../../helpers/SerialComms2'
-import { UnitDetails, JobDetails, RawResults } from '@/types/interfaces'
+import { UnitDetails, RawResults } from '@/types/interfaces'
 import processResults from '../../helpers/processResults'
 import { saveUnitResults } from "../../better-sqlite3"
 
@@ -32,16 +32,13 @@ function TestingWrapper() {
     action: "hold",
   }
 
-  const {pageNumber, setPageNumber, isConnected} = useContext(SystemContext);
-  const [jobDetails, setJobDetails] = useState<JobDetails>({
-    batchNumber: undefined,
-    resistorLoaded: undefined,
-  })
-  const [rawResults, setRawResults] = useState<RawResults>({results: null})
-  const [unitDetails, setUnitDetails] = useState<UnitDetails>(baseUnitDetails)
+  const { pageNumber } = useContext(SystemContext);
+  const [ rawResults, setRawResults ] = useState<RawResults>({results: null})
+  const [ unitDetails, setUnitDetails ] = useState<UnitDetails>(baseUnitDetails)
+  const [ testingInProgress, setTestingInProgress ] = useState(true)
 
-  const [writeCommand, setWriteCommand] = useState('')
-  const [startConnection, setStartConnection] = useState(false)
+  const [ writeCommand, setWriteCommand ] = useState('')
+  const [ startConnection, setStartConnection ] = useState(false)
 
   switch (pageNumber) {
     case 0:
@@ -67,29 +64,17 @@ function TestingWrapper() {
       componentBlock = (
         <>
           <TestFeedbackWrapper details={unitDetails}/>
+          <CompleteTestButton 
+            isDisabled={testingInProgress} 
+            setTestingInProgress={setTestingInProgress} 
+            text='Save & Continue' 
+            pageTarget={1} 
+            baseUnitDetails={baseUnitDetails}
+            setUnitDetails={setUnitDetails}
+            />
         </>
       )
       break;
-      // if (isConnected ){
-      //   setPageNumber(pageNumber+1) // TODO: this is causing crashes.
-      // }
-      // componentBlock = (
-      //   <>
-      //     <h1 className='text-center text-3xl mt-16 mb-8'>Attach test jig to ZIP unit</h1>
-      //     <h2 className='text-center text-xl '>Press Reset button on tester when ready</h2>
-      //     {/* TODO: Tester to be automatically connected when being plugged in */}
-      //     {/* Renderer might not be seeing the event, so might need to send it from ipcMain to ipcRenderer */}
-      //   </>
-      // )
-      // break;
-    // case 3:
-    //   componentBlock = (
-    //     <>
-    //       <TestFeedbackWrapper details={unitDetails}/>
-    //     </>
-    //   )
-    //   break;
-  
     default:
       break;
   }
@@ -99,6 +84,9 @@ function TestingWrapper() {
   },[rawResults])
 
   useEffect(() => {
+    if (pageNumber == 1 || pageNumber == 0){
+      setTestingInProgress(true)
+    }
     if (pageNumber == 2){
       setStartConnection(true)
     }
@@ -108,20 +96,26 @@ function TestingWrapper() {
     const finaliseResults = async () => {
       console.log('saving to database')
       saveUnitResults(unitDetails)
-      await new Promise(resolve => setTimeout(() => {
-        baseUnitDetails = {
-          ...baseUnitDetails, 
-          resistorLoaded: unitDetails['resistorLoaded'], 
-          batchNumber: unitDetails['batchNumber']}
-        setUnitDetails(baseUnitDetails)
-        setPageNumber(1)
-      }, 2500));
+      baseUnitDetails = {
+        ...baseUnitDetails, 
+        resistorLoaded: unitDetails['resistorLoaded'], 
+        batchNumber: unitDetails['batchNumber']}
+
+      // setPageNumber(1)
+      // await new Promise(resolve => setTimeout(() => {
+      //   baseUnitDetails = {
+      //     ...baseUnitDetails, 
+      //     resistorLoaded: unitDetails['resistorLoaded'], 
+      //     batchNumber: unitDetails['batchNumber']}
+      //   setUnitDetails(baseUnitDetails)
+      //   setPageNumber(1)
+      // }, 2500));
     }
 
     if (unitDetails.result == "pass" || unitDetails.result == "fail"){
       finaliseResults()
+      setTestingInProgress(false)
     }
-    console.log(unitDetails)
   }, [unitDetails])
 
   return (

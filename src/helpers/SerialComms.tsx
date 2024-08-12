@@ -98,7 +98,6 @@ function SerialComms({ setRawResults, writeCommand, startConnection}: SerialComm
       readableStreamClosed.current = selectedPort.readable.pipeTo(textDecoder.current.writable)
       reader.current = textDecoder.current.readable.getReader()
 
-  
 
     } catch (error) {
       console.error("Error opening serial port:", error);

@@ -16,6 +16,10 @@ export interface UnitDetails {
   action: "hold" | "flip" | "pass" | "fail";
 }
 
+export interface SetUnitDetails {
+  setUnitDetails: Dispatch<SetStateAction<UnitDetails>>
+}
+
 export interface JobDetails {
   batchNumber: string | undefined
   resistorLoaded: number | undefined
@@ -34,10 +38,6 @@ export interface TextInputProps {
 
 export interface RawResults {
   results: Array<string> | null;
-}
-
-export interface SetUnitDetails {
-  setUnitDetails: Dispatch<SetStateAction<UnitDetails>>
 }
 
 export interface TestParameters {

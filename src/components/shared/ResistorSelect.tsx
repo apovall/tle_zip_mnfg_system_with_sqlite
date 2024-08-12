@@ -1,6 +1,6 @@
-import { Dispatch, SetStateAction } from "react";
+import { Dispatch, SetStateAction, useContext } from "react";
 import { UnitDetails } from "@/types/interfaces";
-
+import { SystemContext } from "../../context/SystemContext";
 // interface JobDetails {
 //   batchNumber: string | undefined;
 //   resistorLoaded: number | undefined;
@@ -15,6 +15,8 @@ interface ResistorSelectProps {
 }
 
 function ResistorSelect({ label, setInputValues, target, unitDetails }: ResistorSelectProps) {
+  const { pageNumber, setPageNumber } = useContext(SystemContext)
+
   return (
     <div className="w-1/2 text-right mx-auto my-4 self-center">
       <div className="flex flex-row justify-center">
@@ -25,6 +27,11 @@ function ResistorSelect({ label, setInputValues, target, unitDetails }: Resistor
           className="basis-2/3 border-2 border-zip-dark rounded-lg p-4 self-center"
           name="resistorLoaded"
           id={target}
+          onKeyDown={(e) => {
+            if (e.key == "Enter"){
+              setPageNumber(pageNumber + 1)
+            }
+          }}
           onChange={(e) => {
             setInputValues((prev) => {
               return { ...prev, [target]: parseInt(e.target.value) };
