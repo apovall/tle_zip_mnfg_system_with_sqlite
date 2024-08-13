@@ -28,6 +28,7 @@
     "buildVite": "vite build",
     "buildMac": "vite build && electron-builder build --mac --config ./electron-builder.json",
     "buildDeb": "vite build && electron-builder --linux --config ./electron-builder.json",
+    "buildWin": "vite build && electron-builder --win --config ./electron-builder.json",
     "rebuild": "electron rebuild.js",
     "rebuild-sqlite3": "electron-rebuild -f -w better-sqlite3",
     "postinstall": "npm run rebuild"

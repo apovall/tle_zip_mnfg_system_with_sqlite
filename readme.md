@@ -24,12 +24,17 @@ TOOD: Create build script that builds, and also moves bashscript into `dist` fol
 - `cd ..`
 - `./AppRun`
 
+
 ## serial port permissions on Ubuntu
 If you can't read serial comms when the tester is plugged in, it's most likely being denied access by the syste itself.
 1. Find serial port name. Run .AppImage above (without sudo but with --no-sandbox), in order to get  terminal output
 2. Look for device name and associated port
 3. set `sudo chmod 666 /dev/ttyACM0`
 
+
+## Building on Ubuntu
+- For windows targets
+  - `sudo apt install wine64`
 
 <!-- ## new version
 - Drop `dist` folder in `sambashare`

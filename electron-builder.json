@@ -15,7 +15,11 @@
   "win": {
     "target": [
       {
-        "target": "nsis",
+        "target": "msi",
+        "arch": ["x64"]
+      },
+      {
+        "target": "zip",
         "arch": ["x64"]
       }
     ],
