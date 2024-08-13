@@ -48,10 +48,11 @@ If you can't read serial comms when the tester is plugged in, it's most likely b
 
 
 # TODO:
-- Save batch 
-- Save loaded resistance
-- Save timestap stamp
+- [x] Save batch 
+- [x] Save loaded resistance
+- [x] Save timestap stamp
 - More graceful serial comms handling, especially on disconnect and reconnect
+  - Lock serial comms read until at the results page?
 - Windows build
 - Fill in readme.
   - Write build steps on Linux (or look at Github actions)

@@ -5,11 +5,12 @@ import { RawResults } from '@/types/interfaces'
 interface SerialCommsProps {
   setRawResults: Dispatch<SetStateAction<RawResults>>;
   writeCommand: string
-  startConnection: boolean
+  startConnection: number
+  setPortConnected: Dispatch<SetStateAction<Boolean>>;
 }
 
-function SerialComms({ setRawResults, writeCommand, startConnection}: SerialCommsProps) {
-  const { isConnected, setIsConnected } = useContext(SystemContext);
+function SerialComms({ setRawResults, writeCommand, startConnection, setPortConnected}: SerialCommsProps) {
+  const { isConnected, setIsConnected, pageNumber } = useContext(SystemContext);
 
   const navigator = useRef(window.navigator);
   const textEncoder = useRef(new TextEncoderStream())
@@ -35,43 +36,37 @@ function SerialComms({ setRawResults, writeCommand, startConnection}: SerialComm
         // const { value, done } = await reader.current?.read()
         const readStream = await reader.current?.read()
 
-        if (readStream && !readStream.done){
-          const { value } = readStream
-
-          if (value) {
-            textStream += value;
+          if (readStream && !readStream.done){
+            const { value } = readStream
+  
+            if (value) {
+              textStream += value;
+            }
           }
-        }
-        
-
-
-        if (readStream && readStream.done) {
-          console.log("done")
-          reader.current?.releaseLock()
-          break
-        }
-        // console.log(value)
-        // if (value) {
-        //   textStream += value;
-        // }
-
-        // Split results based on a new test sequence being observed
-        if (textStream.includes(newTest)){
-          let split = textStream.split(newTest)
-          textStream = split[1]
-        }
-       
-        results = textStream.split(`${terminator}`);
-
-        if (results.at(-1) == "" && results.at(-2) == ">"){
-          setRawResults({results})
-          results = []
-          textStream = ""
-        }
+          
+          if (readStream && readStream.done) {
+            console.log("done")
+            reader.current?.releaseLock()
+            break
+          }
+          // Split results based on a new test sequence being observed
+          if (textStream.includes(newTest)){
+            let split = textStream.split(newTest)
+            textStream = split[1]
+          }
+         
+          results = textStream.split(`${terminator}`);
+  
+          if (results.at(-1) == "" && results.at(-2) == ">"){
+            setRawResults({results})
+            results = []
+            textStream = ""
+          }
       }
     } catch (error) {
-      // disconnectSerial()
       console.log("Error: ", error)
+      setPortConnected(false)
+      await closeConnections()
     }
   }
 
@@ -91,7 +86,6 @@ function SerialComms({ setRawResults, writeCommand, startConnection}: SerialComm
       setPort(selectedPort);
       setIsConnected(true);
 
-
       writableStreamClosed.current = textEncoder.current.readable.pipeTo(selectedPort.writable)
       writer.current = textEncoder.current.writable.getWriter()
 
@@ -103,19 +97,43 @@ function SerialComms({ setRawResults, writeCommand, startConnection}: SerialComm
       console.error("Error opening serial port:", error);
     }
   };
+
+  const closeConnections = async () => {
+    if (reader.current) {
+      console.log("closing reader")
+      await reader.current.cancel();
+      reader.current.releaseLock();
+    }
+    
+    if (writer.current) {
+      console.log("closing writer")
+      await writer.current.close();
+      writer.current.releaseLock();
+    }
+    
+    await readableStreamClosed.current;
+    await writableStreamClosed.current;
+    
+    if (port) {
+      console.log("closing port")
+      await port.close();
+      setPort(null);
+    }
+
+    setIsConnected(false);
+  };
   
   useEffect(() => {
     if (port !== null){
       readSerial()
     }
-    // if (isConnected){
-    //   setPageNumber(pageNumber + 1)
-    // }
+
   }, [port, isConnected])
 
   useEffect(() => {
-    if (startConnection){
+    if (startConnection && port === null){
       requestPort()
+      setPortConnected(true)
     }
   }, [startConnection])
 

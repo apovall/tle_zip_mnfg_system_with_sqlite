@@ -9,7 +9,7 @@ interface UnitDetailsProps {
 function TestFeedbackWrapper({ details }: UnitDetailsProps) {
 
   return (
-    <div className="flex flex-row justify-center text-main py-4">
+    <div className="flex flex-row justify-center text-main pt-16">
       <div className="flex flex-col justify-center basis-1/3">
         <TestParameterFeedback
           text="Battery Contact OK"
@@ -54,10 +54,9 @@ function TestFeedbackWrapper({ details }: UnitDetailsProps) {
         />
       </div>
       <div className="border-l border-disabled h-full mx-20"></div>
-      <div>
-        <InstructionBlock status={details["action"]} />
-      {['fail', 'pass'].includes(details["action"]) ? <p className="py-8">Saving results to database...</p> : <></>}
-
+      <div className="flex flex-col justify-center">
+          <InstructionBlock status={details["action"]} />
+          {['fail', 'pass'].includes(details["action"]) ? <p className="pt-2 text-center">Saving results to database...</p> : <></>}
       </div>
       
     </div>

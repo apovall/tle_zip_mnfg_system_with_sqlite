@@ -13,28 +13,30 @@ function App() {
   return (
     <div className="w-full">
       {/* <img src="/images/zip_banner.png" alt="ZIP Banner" /> */}
-      <img className="absolute top-0" src={`${process.env.NODE_ENV === 'production' ? './images/zip_banner.png' : '/images/zip_banner.png'}`} alt="ZIP Banner" />
+      <div className="">
+        <img className="absolute top-0" src={`${process.env.NODE_ENV === 'production' ? './images/zip_banner.png' : '/images/zip_banner.png'}`} alt="ZIP Banner" />
 
-      {systemContext.activeJob == "select" ? (
-        <>
-          <h1 className="text-center text-3xl my-16">
-            What would you like to do?
-          </h1>
-          <JobSelectorWrapper />
-        </>
-      ) : (
-        <></>
-      )}
-      {systemContext.activeJob == "test" ? (
-        <TestingWrapper />
-      ) : (
-        <></>
-      )}
-      {systemContext.activeJob == "assemble" ? (
-        <AssemblyWrapper />
-      ) : (
-        <></>
-      )}
+        {systemContext.activeJob == "select" ? (
+          <>
+            <h1 className="text-center text-3xl my-16 pt-[120px]">
+              What would you like to do?
+            </h1>
+            <JobSelectorWrapper />
+          </>
+        ) : (
+          <></>
+        )}
+        {systemContext.activeJob == "test" ? (
+          <TestingWrapper />
+        ) : (
+          <></>
+        )}
+        {systemContext.activeJob == "assemble" ? (
+          <AssemblyWrapper />
+        ) : (
+          <></>
+        )}
+      </div>
     </div>
   );
 }

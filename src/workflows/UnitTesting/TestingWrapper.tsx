@@ -38,7 +38,8 @@ function TestingWrapper() {
   const [ testingInProgress, setTestingInProgress ] = useState(true)
 
   const [ writeCommand, setWriteCommand ] = useState('')
-  const [ startConnection, setStartConnection ] = useState(false)
+  const [ startConnection, setStartConnection ] = useState(0)
+  const [ portConnected, setPortConnected ] = useState<Boolean>(false)
 
   switch (pageNumber) {
     case 0:
@@ -88,7 +89,9 @@ function TestingWrapper() {
       setTestingInProgress(true)
     }
     if (pageNumber == 2){
-      setStartConnection(true)
+      setStartConnection((prev) => {
+        return prev + 1
+      })
     }
   }, [pageNumber])
 
@@ -109,7 +112,15 @@ function TestingWrapper() {
 
   return (
     <div className="w-full h-screen flex flex-col justify-center">
-      <SerialComms setRawResults={setRawResults} writeCommand={writeCommand} startConnection={startConnection} />
+      <div className='text-right pb-20 px-4 absolute top-32 right-10'>
+        Device Connected: {portConnected ? <span className='text-acceptable-green'>Connected</span> : <span className='text-orange'>Disconnected</span>}
+      </div>
+      <SerialComms 
+        setRawResults={setRawResults} 
+        writeCommand={writeCommand} 
+        startConnection={startConnection} 
+        setPortConnected={setPortConnected}
+      />
       {componentBlock}
     </div>
   )

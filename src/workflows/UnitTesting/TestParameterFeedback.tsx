@@ -30,7 +30,9 @@ function TestParameterFeedback({text, value, status}:TestParameters) {
   return (
     <div className='flex flex-row flex-nowrap justify-between mb-4 ml-4 text-xl sm:text-2xl mb:text-3xl lg:text-4xl h-[60px]'>
       <h1 className={`text-left my-2`}>{text}:</h1>
-      { value !== null ? <h2 className={`text-right my-2`}>{displayedValue}</h2> : <span className="text-right my-4">{icon}</span>}
+      <div className="flex flex-col justify-center">
+        { value !== null ? <h2 className={`text-right my-2`}>{displayedValue}</h2> : <span className="text-right my-4">{icon}</span>}
+      </div>
     </div>
   )
 }
