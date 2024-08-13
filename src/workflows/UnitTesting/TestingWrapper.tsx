@@ -99,16 +99,6 @@ function TestingWrapper() {
         ...baseUnitDetails, 
         resistorLoaded: unitDetails['resistorLoaded'], 
         batchNumber: unitDetails['batchNumber']}
-
-      // setPageNumber(1)
-      // await new Promise(resolve => setTimeout(() => {
-      //   baseUnitDetails = {
-      //     ...baseUnitDetails, 
-      //     resistorLoaded: unitDetails['resistorLoaded'], 
-      //     batchNumber: unitDetails['batchNumber']}
-      //   setUnitDetails(baseUnitDetails)
-      //   setPageNumber(1)
-      // }, 2500));
     }
 
     if (unitDetails.result == "pass" || unitDetails.result == "fail"){

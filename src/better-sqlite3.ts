@@ -14,6 +14,9 @@ export function createTable(tableName:string) {
   const createTable = database.prepare(`
     CREATE TABLE IF NOT EXISTS ${tableName} (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
+      batchNumber TEXT,
+      resistorLoaded REAL,
+      timestamp TEXT,
       qrCode TEXT,
       result TEXT,
       batt_contact_ok BOOLEAN,
@@ -33,7 +36,6 @@ export function createTable(tableName:string) {
 function readTable(tableName:string) {
   const selectStatement = database.prepare(`SELECT * FROM ${tableName}`);
   const rows = selectStatement.all();
-  // console.log(rows);
   return rows;
 }
 
@@ -48,10 +50,6 @@ export function getSqlite3(filename: string) {
     nativeBinding: path.join(root, import.meta.env.VITE_BETTER_SQLITE3_BINDING),
   })
   createTable(tableName)
-  // const statement = database.prepare('INSERT INTO cats (name, age) VALUES (?, ?)');
-  // const result = statement.run('Horaz', 12);  // Pass parameters to the query
-  // // console.log(result)
-
   const rows = readTable(tableName)
   console.log(rows)
   return database
@@ -60,6 +58,9 @@ export function getSqlite3(filename: string) {
 export function saveUnitResults(data:UnitDetails){
   const stmt = database.prepare(`
     INSERT INTO ${tableName} (
+      batchNumber,
+      resistorLoaded,
+      timestamp,
       qrCode,
       result,
       batt_contact_ok,
@@ -71,10 +72,14 @@ export function saveUnitResults(data:UnitDetails){
       vcell_loaded,
       vcell_unloaded,
       action
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
   `);
-  // Execute the statement with the data
+
+  let timestamp = new Date().toLocaleString()
   let result = stmt.run(
+    data.batchNumber,
+    data.resistorLoaded,
+    timestamp,
     data.qrCode,
     data.result,
     data.batt_contact_ok,

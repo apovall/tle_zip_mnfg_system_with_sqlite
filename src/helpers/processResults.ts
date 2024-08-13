@@ -45,8 +45,7 @@ function processResults(
 
     sendResult(setWriteCommand.setWriteCommand, "resistance_ok", resCheckResult)
     let finalOutcome = finalCheck(cleanedResults)
-    console.log('final outcome')
-    console.log(finalOutcome)
+
     if (finalOutcome !== 'unknown'){
       action = finalOutcome
     }

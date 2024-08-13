@@ -50,7 +50,7 @@ If you can't read serial comms when the tester is plugged in, it's most likely b
 # TODO:
 - Save batch 
 - Save loaded resistance
-- Save stamp
+- Save timestap stamp
 - More graceful serial comms handling, especially on disconnect and reconnect
 - Windows build
 - Fill in readme.
