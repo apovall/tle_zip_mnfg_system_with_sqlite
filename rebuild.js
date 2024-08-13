@@ -4,7 +4,8 @@ const child = require('child_process');
 // If you prefer electron-rebuild:
 // 👉 https://github.com/WiseLibs/better-sqlite3/blob/v8.5.2/docs/troubleshooting.md#electron
 // 👉 https://stackoverflow.com/questions/46384591/node-was-compiled-against-a-different-node-js-version-using-node-module-versio/52796884#52796884
-
+// TODO: These posix paths work for mac and ubuntu, but break for Windows
+// Removing them works for windows, so need to update the code to dynamically select the path
 const better_sqlite3 = require.resolve('better-sqlite3');
 const better_sqlite3_root = path.posix.join(better_sqlite3.slice(0, better_sqlite3.lastIndexOf('node_modules')), 'node_modules/better-sqlite3');
 const cp = child.spawn(

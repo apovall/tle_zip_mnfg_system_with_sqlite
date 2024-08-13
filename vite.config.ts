@@ -53,6 +53,8 @@ function bindingSqlite3(options: {
     name: 'vite-plugin-binding-sqlite3',
     config(config) {
       // https://github.com/vitejs/vite/blob/v4.4.9/packages/vite/src/node/config.ts#L496-L499
+      // TODO: These posix paths work for mac and ubuntu, but break for Windows
+      // Removing them works for windows, so need to update the code to dynamically select the path
       const resolvedRoot = normalizePath(config.root ? path.resolve(config.root) : process.cwd())
       const output = path.posix.resolve(resolvedRoot, options.output)
       const better_sqlite3 = require.resolve('better-sqlite3')
