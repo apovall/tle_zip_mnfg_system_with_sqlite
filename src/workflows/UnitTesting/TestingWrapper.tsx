@@ -73,6 +73,7 @@ function TestingWrapper() {
             baseUnitDetails={baseUnitDetails}
             setUnitDetails={setUnitDetails}
             />
+          <BackButton text="Back" marginOverride='mt-10' />
         </>
       )
       break;

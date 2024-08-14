@@ -126,6 +126,7 @@ function SerialComms({ setRawResults, writeCommand, startConnection, setPortConn
   useEffect(() => {
     if (port !== null){
       readSerial()
+      setPortConnected(true)
     }
 
   }, [port, isConnected])
@@ -133,7 +134,6 @@ function SerialComms({ setRawResults, writeCommand, startConnection, setPortConn
   useEffect(() => {
     if (startConnection && port === null){
       requestPort()
-      setPortConnected(true)
     }
   }, [startConnection])
 
