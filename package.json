@@ -31,6 +31,7 @@
     "buildWin": "vite build && electron-builder --win --config ./electron-builder.json",
     "rebuild": "electron rebuild.js",
     "rebuild-sqlite3": "electron-rebuild -f -w better-sqlite3",
+    "rebuild-sqlite3-all": "cd node_modules/better-sqlite3 && npm run build-release -- --target=31.1.0 --dist-url=https://electronjs.org/headers",
     "postinstall": "npm run rebuild"
   },
   "devDependencies": {

@@ -41,13 +41,22 @@ function readTable(tableName:string) {
 
 export function getSqlite3(filename: string) {
 
+  let dbPath 
+  let platform = process.platform
+
+  if (platform == 'win32'){
+    dbPath = path.join(root, "/dist-native/better_sqlite3.node")
+  } else {
+    dbPath = path.join(root, import.meta.env.VITE_BETTER_SQLITE3_BINDING)
+  }
+
   console.log(filename)
   console.log(root)
   console.log(import.meta.env.VITE_BETTER_SQLITE3_BINDING)
   database ??= new Database(filename, {
     // https://github.com/WiseLibs/better-sqlite3/blob/v8.5.2/lib/database.js#L36
     // https://github.com/WiseLibs/better-sqlite3/blob/v8.5.2/lib/database.js#L50
-    nativeBinding: path.join(root, import.meta.env.VITE_BETTER_SQLITE3_BINDING),
+    nativeBinding: dbPath,
   })
   createTable(tableName)
   const rows = readTable(tableName)

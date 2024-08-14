@@ -13,13 +13,10 @@
     "public/images/**/*"
   ],
   "win": {
+    "icon": "public/logo.png",
     "target": [
       {
         "target": "msi",
-        "arch": ["x64"]
-      },
-      {
-        "target": "zip",
         "arch": ["x64"]
       }
     ],

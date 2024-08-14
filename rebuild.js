@@ -7,9 +7,23 @@ const child = require('child_process');
 // TODO: These posix paths work for mac and ubuntu, but break for Windows
 // Removing them works for windows, so need to update the code to dynamically select the path
 const better_sqlite3 = require.resolve('better-sqlite3');
-const better_sqlite3_root = path.posix.join(better_sqlite3.slice(0, better_sqlite3.lastIndexOf('node_modules')), 'node_modules/better-sqlite3');
+let better_sqlite3_root
+let cmd
+let platform = process.platform
+if (platform == 'win32' || platform == 'win64'){
+  better_sqlite3_root = path.join(better_sqlite3.slice(0, better_sqlite3.lastIndexOf('node_modules')), 'node_modules/better-sqlite3');
+  cmd = "npm.cmd"
+} else {
+  better_sqlite3_root = path.posix.join(better_sqlite3.slice(0, better_sqlite3.lastIndexOf('node_modules')), 'node_modules/better-sqlite3');
+  cmd = 'npm'
+}
+
+console.log('Spawning process with the following parameters:');
+console.log(`Arguments: ['run', 'build-release', '--target=${process.versions.electron}', '--dist-url=https://electronjs.org/headers']`);
+console.log(`Working Directory: ${better_sqlite3_root}`);
+
 const cp = child.spawn(
-  process.platform === 'win32' ? 'npm.cmd' : 'npm',
+  cmd,
   [
     'run',
     'build-release',
@@ -22,6 +36,11 @@ const cp = child.spawn(
     stdio: 'inherit',
   },
 );
+
+cp.on('error', (err) => {
+  console.error(`Error occurred while spawning the process: ${err.message}`);
+  process.exit(1);
+});
 
 cp.on('exit', code => {
   if (code === 0) {
