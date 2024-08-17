@@ -1,7 +1,7 @@
 {
   "appId": "com.product_nimbus.zip_manufacturing_test_interface",
   "asar": true,
-  "productName": "zip-mnfg-test-system-ui",
+  "productName": "ZIP Test System",
   "copyright": "Copyright © 2022 ${author}",
   "directories": {
     "output": "release/"
@@ -29,13 +29,19 @@
     "deleteAppDataOnUninstall": false
   },
   "mac": {
+    "icon": "public/logo.png",
     "target": ["dmg"],
     "artifactName": "${productName}-Mac-${version}-Installer.${ext}"
   },
   "linux": {
+    "icon": "public/logo_256.png",
     "target": [
       {
         "target": "AppImage",
+        "arch": ["x64"]
+      },
+      {
+        "target": "deb",
         "arch": ["x64"]
       }
     ],

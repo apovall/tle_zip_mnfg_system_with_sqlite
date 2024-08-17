@@ -46,6 +46,10 @@ If you can't read serial comms when the tester is plugged in, it's most likely b
 - Ensure the port and user are added to the correct dailout group
 
 ## Windows
+- Delete .env file
+- Move to windows
+- run npm install
+- run npm buildWin
 
 # TODO:
 - [x] Save batch 
