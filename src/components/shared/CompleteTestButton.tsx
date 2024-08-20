@@ -6,6 +6,7 @@ interface CompleteTestButtonProps {
   text: string;
   isDisabled: boolean;
   pageTarget: number;
+  unitDetails: UnitDetails;
   baseUnitDetails: UnitDetails;
   setUnitDetails: Dispatch<SetStateAction<UnitDetails>>;
   setTestingInProgress: Dispatch<SetStateAction<boolean>>;
@@ -16,6 +17,7 @@ function CompleteTestButton({
   isDisabled,
   setTestingInProgress,
   pageTarget,
+  unitDetails,
   baseUnitDetails,
   setUnitDetails
 }: CompleteTestButtonProps) {
@@ -26,6 +28,17 @@ function CompleteTestButton({
     ? "bg-disabled"
     : "bg-gradient-to-r from-zip-light to-zip-dark hover:scale-105";
 
+  const resetAndContinue = () => {
+    baseUnitDetails = {
+      ...baseUnitDetails, 
+      resistorLoaded: unitDetails['resistorLoaded'], 
+      batchNumber: unitDetails['batchNumber']}
+      setPageNumber(pageTarget)
+      setUnitDetails(baseUnitDetails)
+      setTestingInProgress(true)
+      console.log('Next Test base Unit Details')
+      console.log(baseUnitDetails)
+  }
 
   useEffect(() => {
     if (focusButton.current){
@@ -40,16 +53,10 @@ function CompleteTestButton({
       ref={focusButton}
       onKeyDown={(e) => {
         if (e.key == "Enter"){
-          setPageNumber(pageTarget)
-          setUnitDetails(baseUnitDetails)
-          setTestingInProgress(true)
+          resetAndContinue()
         }
       }}
-      onClick={() => {
-        setUnitDetails(baseUnitDetails)
-        setPageNumber(pageTarget)
-        setTestingInProgress(true)
-      }}
+      onClick={resetAndContinue}
     >
       {text}
     </button>

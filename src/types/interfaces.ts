@@ -34,6 +34,7 @@ export interface TextInputProps {
   setInputValues:  Dispatch<SetStateAction<UnitDetails>>;
   target: string;
   value: string | null;
+  autoFocus?: boolean;
 }
 
 export interface RawResults {

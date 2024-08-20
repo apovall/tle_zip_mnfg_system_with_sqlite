@@ -19,8 +19,8 @@ function processResults(
         let splitResult = item.split(": ");
         // console.log(splitResult)
         cleanedResults = {...cleanedResults, [splitResult[0]]: splitResult[1] }
-
         if (splitResult[1] == 'fail'){
+          console.log('detected a fail state')
           action = 'fail'
         } 
 
@@ -45,6 +45,7 @@ function processResults(
 
     sendResult(setWriteCommand.setWriteCommand, "resistance_ok", resCheckResult)
     let finalOutcome = finalCheck(cleanedResults)
+
 
     if (finalOutcome !== 'unknown'){
       action = finalOutcome
@@ -89,16 +90,39 @@ function checkBattVoltage(measuredCell:number | undefined){
 
 function finalCheck(cleanedResults:any) {
   let assessedItems = ["batt_contact_ok",  "batt_voltage_ok",  "tilt_sw_opens",  "tilt_sw_closes",  "resistance_ok"]
-  let outcome = 'pass'
+  let hasUnknown
 
-  assessedItems.forEach((item) => {
-    if (cleanedResults[item] == "unknown"){
-      outcome = 'unknown'
-    } else if (cleanedResults[item] == "fail"){
-      outcome = 'fail'
+  for (let key of assessedItems){
+    if (cleanedResults[key] == 'fail'){
+      return 'fail'
     }
-  })
-  return outcome
+    if (cleanedResults[key] == 'unknown'){
+      hasUnknown = true
+    }
+  }
+  
+  return hasUnknown ? "unknown" : "pass"
+
+  // // If all items in assessed items are 'pass', then pass entire device
+  // hasPassed = Object.entries(cleanedResults).every((pair[1], value) => {
+
+  //   // if (assessedItems.includes(pair[0])){
+
+  //   //   return true
+  //   // } 
+  //   // return false
+  //   // return element == 'fail' ? true : false
+  // })
+
+  // assessedItems.forEach((item) => {
+  //   console.log(cleanedResults[item])
+  //   if (cleanedResults[item] == "fail"){
+  //     return 'fail' // Immediately return fail - as any failure fails entire unit.
+  //   } else if (cleanedResults[item] == "unknown"){
+  //     outcome = 'unknown'
+  //   }
+  // })
+  // return outcome
 
 }
 

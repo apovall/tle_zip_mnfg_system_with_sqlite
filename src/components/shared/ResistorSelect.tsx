@@ -12,9 +12,10 @@ interface ResistorSelectProps {
   unitDetails: UnitDetails;
   target: string;
   value: number | null;
+  autoFocus?: boolean
 }
 
-function ResistorSelect({ label, setInputValues, target, unitDetails }: ResistorSelectProps) {
+function ResistorSelect({ label, setInputValues, target, unitDetails, autoFocus=false }: ResistorSelectProps) {
   const { pageNumber, setPageNumber } = useContext(SystemContext)
 
   return (
@@ -27,6 +28,7 @@ function ResistorSelect({ label, setInputValues, target, unitDetails }: Resistor
           className="basis-2/3 border-2 border-zip-dark rounded-lg p-4 self-center"
           name="resistorLoaded"
           id={target}
+          autoFocus={autoFocus}
           onKeyDown={(e) => {
             if (e.key == "Enter"){
               setPageNumber(pageNumber + 1)
