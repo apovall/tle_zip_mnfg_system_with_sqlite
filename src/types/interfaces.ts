@@ -64,3 +64,13 @@ export interface ProcessResultsProps {
 export interface setWriteCommand {
   setWriteCommand: Dispatch<SetStateAction<string>>
 }
+
+export interface SerialCommsWrite {
+  serialCommsWrite: (command: string) => Promise<void>
+}
+
+export interface CancelButtonProps {
+  text: string;
+  disconnectReader: () => Promise<void>
+    
+  }

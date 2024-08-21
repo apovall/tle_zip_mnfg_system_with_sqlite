@@ -74,6 +74,14 @@ function createWindow() {
       }
     }
   );
+
+  win.webContents.session.on('serial-port-revoked', (event, details) => {
+    console.log(`Access revoked for serial device from origin ${details.origin}`)
+  })
+
+  win.webContents.session.on('serial-port-removed', (event, details) => {
+    console.log(`Access to serial port has been removed ====>`)
+  })
   // win?.webContents.session.setDevicePermissionHandler((details) => {
   //   console.log('details ===========>', details)
   //   if (details.deviceType === "serial") {
@@ -88,8 +96,6 @@ function createWindow() {
   // Test active push message to Renderer-process.
   win.webContents.on("did-finish-load", () => {
     win?.webContents.send("main-process-message", new Date().toLocaleString());
-      
-
   });
 
   if (process.env.VITE_DEV_SERVER_URL) {

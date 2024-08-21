@@ -1,7 +1,9 @@
 import { useContext } from 'react'
 import { SystemContext } from "../../context/SystemContext";
 
-function CancelButton({ text }: { text: string }) {
+import { CancelButtonProps } from "../../types/interfaces"
+
+function CancelButton({ text, disconnectReader }: CancelButtonProps) {
 
   const { setActiveJob, setPageNumber } = useContext(SystemContext);
 
@@ -11,6 +13,7 @@ function CancelButton({ text }: { text: string }) {
       onClick={() => {
         setPageNumber(0)
         setActiveJob("select")
+        disconnectReader()
       }}
     >
       {text}

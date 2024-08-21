@@ -1,11 +1,12 @@
-import { RawResults, SetUnitDetails, setWriteCommand, JobDetails, UnitDetails } from "@/types/interfaces";
+import { RawResults, SetUnitDetails, setWriteCommand, JobDetails, UnitDetails, SerialCommsWrite } from "@/types/interfaces";
 import { Dispatch, SetStateAction } from 'react'
 
 function processResults(
   results: RawResults, 
   unitDetails: UnitDetails,
   setUnitDetails: SetUnitDetails, 
-  setWriteCommand: setWriteCommand
+  setWriteCommand?: setWriteCommand, //TODO: Remove?
+  serialCommsWrite?: SerialCommsWrite //TODO: Remove?
   ) {
   let cleanedResults = {};
   let resCheckResult = "unknown"
@@ -24,37 +25,38 @@ function processResults(
           action = 'fail'
         } 
 
-        // if (splitResult[1].includes(" mV")){
-        //   // splitResult[1] = splitResult[1].replace(" mV", "");
         if (splitResult[0] == "vcell_unloaded"){
           battCheckResult = checkBattVoltage(parseInt(splitResult[1]))
           cleanedResults = {...cleanedResults, batt_voltage_ok: battCheckResult }
-          // sendResult(setWriteCommand.setWriteCommand, "batt_voltage_ok", battCheckResult)
-          setWriteCommand.setWriteCommand("< result" + terminator + `batt_voltage_ok: ${battCheckResult}` + terminator + ">" + terminator) // TODO: Investigate why this fails when done back to back
         }
 
         // }
         if (splitResult[1].includes(" ohms")){
-          // splitResult[1] = splitResult[1].replace(" ohms", "");
-          // Check resistance in here
           resCheckResult = checkResistance(unitDetails["resistorLoaded"], parseInt(splitResult[1]))
           cleanedResults = {...cleanedResults, 'resistance_ok': resCheckResult }
         }
       }
     });
 
-    sendResult(setWriteCommand.setWriteCommand, "resistance_ok", resCheckResult)
     let finalOutcome = finalCheck(cleanedResults)
+  
 
 
     if (finalOutcome !== 'unknown'){
       action = finalOutcome
     }
+
     cleanedResults = {...cleanedResults, result: finalOutcome, action: action}
     setUnitDetails.setUnitDetails((prev) => {
       return {...prev, ...cleanedResults}
     })
   }
+
+  // return {"batt_voltage_ok": battCheckResult, "resistance_ok": resCheckResult}
+  return  "< result" + terminator + 
+          `batt_voltage_ok: ${battCheckResult}` + terminator +
+          `resistance_ok: ${resCheckResult}` + terminator +
+          ">" + terminator
 }
 
 export default processResults;
@@ -126,9 +128,15 @@ function finalCheck(cleanedResults:any) {
 
 }
 
-async function sendResult(setWriteCommand:Dispatch<SetStateAction<string>>, target:string, result:string){
+async function sendResult(setWriteCommand:(command: string) => Promise<void>, target:string, result:string){
   const terminator = "\r\n"
   await new Promise(resolve => setTimeout(() => {
     setWriteCommand("< result" + terminator + `${target}: ${result}` + terminator + ">" + terminator)
   }, 100));
 }
+// async function sendResult(setWriteCommand:Dispatch<SetStateAction<string>>, target:string, result:string){
+//   const terminator = "\r\n"
+//   await new Promise(resolve => setTimeout(() => {
+//     setWriteCommand("< result" + terminator + `${target}: ${result}` + terminator + ">" + terminator)
+//   }, 100));
+// }

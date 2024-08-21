@@ -1,6 +1,6 @@
 import { useContext, Dispatch, SetStateAction, useEffect, useRef } from "react";
 import { SystemContext } from "../../context/SystemContext";
-import { UnitDetails, SetUnitDetails } from "@/types/interfaces";
+import { UnitDetails } from "@/types/interfaces";
 
 interface CompleteTestButtonProps {
   text: string;
@@ -32,12 +32,11 @@ function CompleteTestButton({
     baseUnitDetails = {
       ...baseUnitDetails, 
       resistorLoaded: unitDetails['resistorLoaded'], 
-      batchNumber: unitDetails['batchNumber']}
+      batchNumber: unitDetails['batchNumber']
+    }
       setPageNumber(pageTarget)
       setUnitDetails(baseUnitDetails)
       setTestingInProgress(true)
-      console.log('Next Test base Unit Details')
-      console.log(baseUnitDetails)
   }
 
   useEffect(() => {
