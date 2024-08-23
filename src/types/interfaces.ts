@@ -1,4 +1,5 @@
-import { Dispatch, SetStateAction } from 'react'
+import { BrowserSerial } from 'browser-serial'
+import { Dispatch, MutableRefObject, SetStateAction } from 'react'
 
 export interface UnitDetails {
   qrCode: string | undefined,
@@ -51,9 +52,10 @@ export interface SystemContextProps {
   activeJob: "select" | "test" | "assemble"
   setActiveJob: Dispatch<SetStateAction<"select" | "test" | "assemble">>
   pageNumber: number;
-  setPageNumber: Dispatch<SetStateAction<number>>
-  isConnected: boolean,
-  setIsConnected: Dispatch<SetStateAction<boolean>>
+  setPageNumber: Dispatch<SetStateAction<number>>;
+  isConnected: boolean;
+  setIsConnected: Dispatch<SetStateAction<boolean>>;
+  serial: MutableRefObject<BrowserSerial>;
 }
 
 export interface ProcessResultsProps {
@@ -70,7 +72,6 @@ export interface SerialCommsWrite {
 }
 
 export interface CancelButtonProps {
-  text: string;
-  disconnectReader: () => Promise<void>
-    
+  text: string;    
+  disconnect: () => void;
   }

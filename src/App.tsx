@@ -9,7 +9,6 @@ import "./App.css";
 function App() {
   const systemContext = useContext(SystemContext);
 
-
   return (
     <div className="w-full">
       {/* <img src="/images/zip_banner.png" alt="ZIP Banner" /> */}

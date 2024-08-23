@@ -6,3 +6,6 @@ dist
 dist-electron
 dist-native
 release
+
+extensions.json
+.vscode

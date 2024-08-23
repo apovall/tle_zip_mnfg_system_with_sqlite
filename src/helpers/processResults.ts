@@ -39,8 +39,6 @@ function processResults(
     });
 
     let finalOutcome = finalCheck(cleanedResults)
-  
-
 
     if (finalOutcome !== 'unknown'){
       action = finalOutcome
@@ -105,38 +103,4 @@ function finalCheck(cleanedResults:any) {
   
   return hasUnknown ? "unknown" : "pass"
 
-  // // If all items in assessed items are 'pass', then pass entire device
-  // hasPassed = Object.entries(cleanedResults).every((pair[1], value) => {
-
-  //   // if (assessedItems.includes(pair[0])){
-
-  //   //   return true
-  //   // } 
-  //   // return false
-  //   // return element == 'fail' ? true : false
-  // })
-
-  // assessedItems.forEach((item) => {
-  //   console.log(cleanedResults[item])
-  //   if (cleanedResults[item] == "fail"){
-  //     return 'fail' // Immediately return fail - as any failure fails entire unit.
-  //   } else if (cleanedResults[item] == "unknown"){
-  //     outcome = 'unknown'
-  //   }
-  // })
-  // return outcome
-
 }
-
-async function sendResult(setWriteCommand:(command: string) => Promise<void>, target:string, result:string){
-  const terminator = "\r\n"
-  await new Promise(resolve => setTimeout(() => {
-    setWriteCommand("< result" + terminator + `${target}: ${result}` + terminator + ">" + terminator)
-  }, 100));
-}
-// async function sendResult(setWriteCommand:Dispatch<SetStateAction<string>>, target:string, result:string){
-//   const terminator = "\r\n"
-//   await new Promise(resolve => setTimeout(() => {
-//     setWriteCommand("< result" + terminator + `${target}: ${result}` + terminator + ">" + terminator)
-//   }, 100));
-// }

@@ -81,6 +81,12 @@ function createWindow() {
 
   win.webContents.session.on('serial-port-removed', (event, details) => {
     console.log(`Access to serial port has been removed ====>`)
+    win?.webContents.send('serial-port-removed', "Port has been disconnected");
+  })
+
+  win.webContents.session.on('serial-port-added', (event, details) => {
+    console.log(`Access to serial port has been added ====>`)
+    win?.webContents.send('serial-port-added', "Port has been reconnected");
   })
   // win?.webContents.session.setDevicePermissionHandler((details) => {
   //   console.log('details ===========>', details)

@@ -1,4 +1,5 @@
-import { createContext, FC, useState, ReactNode } from 'react';
+import { createContext, FC, useState, ReactNode, useRef } from 'react';
+import { BrowserSerial } from "browser-serial";
 import { SystemContextProps } from '@/types/interfaces';
 import Database from 'better-sqlite3'
 import { saveUnitResults } from '../better-sqlite3';
@@ -11,6 +12,7 @@ export const SystemContext = createContext<SystemContextProps>({
   setPageNumber: () => {},
   isConnected: false,
   setIsConnected: () => {},
+  serial: { current: new BrowserSerial() }
 });
 
 interface SystemProviderProps {
@@ -22,8 +24,10 @@ export const SystemContextProvider:FC<SystemProviderProps> = ({children}) => {
   const [activeJob, setActiveJob] = useState<"select" | "test" | "assemble">("select")
   const [isConnected, setIsConnected] = useState(false)
 
+  const serial = useRef(new BrowserSerial())
+
   return (
-    <SystemContext.Provider value={{ pageNumber, setPageNumber, activeJob, setActiveJob, isConnected, setIsConnected }}>
+    <SystemContext.Provider value={{ pageNumber, setPageNumber, activeJob, setActiveJob, isConnected, setIsConnected, serial }}>
       {children}
     </SystemContext.Provider>
   )

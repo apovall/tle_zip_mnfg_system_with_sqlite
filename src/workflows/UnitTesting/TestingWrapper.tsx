@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import TextInput from "../../components/shared/TextInput";
 import ResistorSelect from "../../components/shared/ResistorSelect";
 import QRCodeInput from "../../components/shared/QRCodeInput";
@@ -8,19 +8,12 @@ import CancelButton from "../../components/shared/CancelButton";
 import CompleteTestButton from "../../components/shared/CompleteTestButton";
 import { SystemContext } from "../../context/SystemContext";
 import TestFeedbackWrapper from "./TestFeedbackWrapper";
-import SerialComms from "../../helpers/SerialComms";
-import SerialCommsTS from "../../helpers/SerialCommsTS";
 import { UnitDetails, RawResults } from "@/types/interfaces";
 import processResults from "../../helpers/processResults";
 import { saveUnitResults } from "../../better-sqlite3";
 import { BrowserSerial } from "browser-serial";
-// import { BrowserSerial } from "../../helpers/serialCopy";
 import { dataCleanup } from "../../helpers/serialHelpers";
-
-/* 
-  Options: useRef instead of state for SerialComms?
-
-*/
+import { ipcRenderer } from 'electron';
 
 function TestingWrapper() {
   let componentBlock;
@@ -40,64 +33,79 @@ function TestingWrapper() {
     action: "hold",
   };
 
-  const { isConnected, setIsConnected, pageNumber } = useContext(SystemContext);
+  const deviceModeLookup: { [key: string]: string } = {
+    "mode: 1": "Manual",
+    "mode: 2": "Automatic",
+    "mode: 3": "Resistor Detect",
+  };
+
+  const { isConnected, setIsConnected, pageNumber, serial } = useContext(SystemContext);
   const [rawResults, setRawResults] = useState<RawResults>({ results: null });
   const [unitDetails, setUnitDetails] = useState<UnitDetails>(baseUnitDetails);
   const [testingInProgress, setTestingInProgress] = useState(true);
   const [canProcessResults, setCanProcessResults] = useState(false)
 
-  const [writeCommand, setWriteCommand] = useState("");
-  const [startConnection, setStartConnection] = useState(0);
-  const [portConnected, setPortConnected] = useState<Boolean>(false);
-  const [serial, setSerial] = useState<BrowserSerial>(new BrowserSerial());
+  const [deviceMode, setDeviceMode] = useState("Press Reset Button")
 
   const connectToReader = async () => {
 
-    serial.connect()
+    console.log('pre-connect port state: =>>', serial.current.port)
+    serial.current.connect()
         .then(() => {
-          console.log("Connected to Reader");
+          console.log('connect port state: =>>', serial.current.port)
           setIsConnected(true);
         })
         .catch((error) => {
-          error = error.toString()
-          const pattern = new RegExp("The port is already open")
-          if (error.search(pattern) !=-1) {
-            console.log('Ignoring error - The port is already open')
-            return
-          } else {
-            console.log('Error in localSerial', error)
-          }
+          console.log('connect error port state: =>>', serial.current.port)
+          console.log('Error connecting to reader: ', error)
           setIsConnected(false);
-        }); 
+        })
   }
 
   const readSerial = async () => {
     // read data line by line as it comes in
     let results:Array<string> = []
     let cleanedData
-    let lineReader = serial.readLineGenerator()
+    let lineReader = serial.current.readLineGenerator()
+    let unitMode = 'unknown' // Not relying on state to be updated in time to use
 
     try {
       for await (let { value, done } of lineReader) {   
         if (value) {
           results.push(value)
-          // Disgusting but it works
-          if (results[0] == '< start' && results[1] == 'mode: 2' && results[2] == '>'){
+          
+          // Start statement has been received
+          if (results[0] == '< start' && results[2] == '>'){
+            console.log(results[1])
+            unitMode = results[1]
+            setDeviceMode(deviceModeLookup[results[1]])
             results = []
           }
 
-          // process results
-          cleanedData = dataCleanup(results)
-          if (cleanedData.results.length > 1){
-            console.log(cleanedData)
-            setRawResults(cleanedData)
+          // startin state
+          if (unitMode == 'unknown') {
+            continue
+          } 
+
+          if (unitMode == 'mode: 2') {    
+            // process results if automatic mode
+            cleanedData = dataCleanup(results)
+            if (cleanedData.results.length > 1){
+              //console.log(cleanedData)
+              setRawResults(cleanedData)
+              results = []
+            }
+          } 
+
+          if (unitMode == 'mode: 1' && results.at(-1) == '>') { 
             results = []
-            // Once here, process the results and reset the results array.
+            // Currently throw all the results away if not mode 2
+            // If the unit fails in any way, it will output the results anyway, which
+            // the system doesn't know what to do with, and keeps appending results
+            // ad infinitum.
           }
         }
         if (done === true) {
-          console.log("done")
-          await disconnectReader()
           break;
         }
       }
@@ -106,40 +114,52 @@ function TestingWrapper() {
       let errorString = error.toString()
       const pattern = new RegExp("A call to open()")
       if (errorString.search(pattern) !=-1) {
-        console.log('Ignoring error - A call to open()')
+        //console.log('Ignoring error - Port already opened')
         return
       } else {
-        console.log("Error out from reader loop: \n ============")
+        //console.log("Error out from reader loop: \n", error)
       }
-
-      try{
-        console.log("====> Disconnecting")
-        await disconnectReader()
-
-      } catch (de){
-        console.log("error disconnecting, ", de)
-      }
-      // try {
-      //   console.log("Error ====> Forgetting")
-      //   serial.port?.forget()
-        
-      // } catch (fe) {
-      //   console.log("error forgetting, ", fe)
-      // }
     }
   }
 
-  const disconnectReader = async () => {
-    serial.disconnect().then((result) => {
-      console.log("Successful Disconnect executed in disconnectReader \n ===============", result)
-    }).catch((e) => {
-      console.log("Error Disconnecting in disconnectReader \n ===============", e)
-    }).finally(() => {
-      console.log('Do something in here?')
-    })
-    return 
+  const disconnect = async () => {
+    // See if reader needs to be unlocked first.
+    if (serial.current.port?.readable.locked == true){
+      await serial.current.reader?.cancel();
+    }
+
+    // See if writer needs to be unlocked first.
+    if (serial.current.port?.writable.locked == true){
+      await serial.current.writeToStream.getWriter().close();
+    }
+
+    // Wait - as it seems that the await functions don't actually await, and is the
+    // cause of most of the error messages. A value of 0 works, but being safe with 250ms.
+    await new Promise((resolve) => setTimeout(resolve, 250));
+    await serial.current.port?.close();
+
+    setIsConnected(false);
+    setDeviceMode("Press Reset Button");
   }
 
+  const readPortStatus = () => {
+    console.log('readPortStatus port state: =>>', serial.current.port)
+  }
+
+  const resetSerialComms = async () => {
+      // If the port has already been disconnected, then just connect to it      
+      if (serial.current.port == null || serial.current.port.readable == null){
+        serial.current = new BrowserSerial()
+        connectToReader()
+      } else {
+        serial.current.disconnect().then(() => {
+          serial.current.port?.close()
+          serial.current = new BrowserSerial()
+        }).then(() => {
+          connectToReader()
+        })
+      }
+  }
 
   switch (pageNumber) {
     case 0:
@@ -166,7 +186,7 @@ function TestingWrapper() {
               unitDetails["resistorLoaded"] == null
             }
           />
-          <CancelButton text="Cancel Job" disconnectReader={disconnectReader} />
+          <CancelButton text="Cancel Job" disconnect={disconnect} />
         </>
       );
       break;
@@ -221,25 +241,25 @@ function TestingWrapper() {
     return () => {}
   }, [pageNumber]);
  
+
   useEffect(() => {
-    if (serial.port == null) {
-      console.log('serial port is null, attempting connection')
+    if (serial.current.port == null) {
       connectToReader()
     }
 
     return () => {}
-  }, [serial.port]);
+  }, [serial.current.port]);
 
   // Read Serial on Loop, clean incoming data
   useEffect(() => {
-    if (isConnected) {
+    if (isConnected == true) {
+      //console.log('initial connect')
       readSerial()
     }
 
     return () => {}
 
   }, [isConnected]);
-
 
   /* Want to have more processing logic, to stop the unit from continuing to read / process data while not in a test state */
   useEffect(() => {
@@ -250,14 +270,12 @@ function TestingWrapper() {
         unitDetails,
         { setUnitDetails },
       );
-      serial.write(dataToWrite)
+      serial.current.write(dataToWrite)
     };
 
     if (canProcessResults){
       processRawResults();
-    } else {
-      console.log('cannot process results as canProcessResults is: ', canProcessResults)
-    }
+    } 
 
     return () => {};
 
@@ -266,13 +284,10 @@ function TestingWrapper() {
   // If the test has a pass or fail result
   useEffect(() => {
     const finaliseResults = () => {
-      console.log("finalising result");
       saveUnitResults(unitDetails);
     };
 
     if (unitDetails.result == "pass" || unitDetails.result == "fail") {
-      console.log("unitDetails.result: ", unitDetails);
-      console.log(unitDetails);
       finaliseResults();
       setTestingInProgress(false);
       setCanProcessResults(false)
@@ -282,74 +297,52 @@ function TestingWrapper() {
 
   }, [unitDetails.result]);
 
+  useEffect(() => {
+    ipcRenderer.on('serial-port-removed', (event, details) => {
+      //console.log('Disconnecting reader')
+      setDeviceMode("Press Reset Button")
+      setIsConnected(false)
+    })
+    ipcRenderer.on('serial-port-added', (event, details) => {
+      setDeviceMode("Press Reset Button")
+      //console.log('Reconnecting reader')
+    })
+
+    // Clean up the listener when the component unmounts
+    return () =>  {
+      ipcRenderer.removeListener('serial-port-removed', () => {});
+      ipcRenderer.removeListener('serial-port-added', () => {});
+    };
+
+  }, [])
+
   return (
     <div className="w-full h-screen flex flex-col justify-center">
       <div className="text-right pb-20 px-4 absolute top-32 right-10">
+        <div className="">
+          Device Mode: {" "}
+          <span className={`${deviceMode == "Automatic" ? "text-acceptable-green" : "text-orange"}`}>
+            {deviceMode}
+          </span> 
+        </div>
+
         Device Connected:{" "}
         {isConnected ? (
           <span className="text-acceptable-green">Connected</span>
         ) : (
-          <span className="text-orange cursor-pointer hover:scale-105 hover:text-acceptable-green" onClick={connectToReader}>Reconnect</span>
+          <span className="text-cancel cursor-pointer hover:scale-10">Disconnected</span>
         )}
+        {!isConnected ? <div className="text-zip-dark cursor-pointer hover:scale-105 hover:text-acceptable-green" onClick={async () => {
+          await resetSerialComms()
+        }}>Reconnect comms</div> : <></>}
+       
       </div>
-      {/* <SerialComms
-        setRawResults={setRawResults}
-        writeCommand={writeCommand}
-        startConnection={startConnection}
-        setPortConnected={setPortConnected}
-      /> */}
       {componentBlock}
+      <button onClick={disconnect}>Disconnect</button>
+      <button onClick={readPortStatus}>Read Port Status</button>
     </div>
   );
 }
 
 export default TestingWrapper;
-
-
-
-
-
-
-
-///////////////-================ Placeholder
-
-  // useEffect(() => {
-  //   // Port scan for disconnect
-  //   const portScan = async () => {
-  //     await new Promise(resolve => 
-  //       setInterval(async () => {
-  //         console.log('Checking serial is connected: ', serial.port)
-  //         if (serial.port !== null && serial.port.readable == null){
-  //           console.log('cannot read port')
-  //           try {
-  //             await serial.disconnect()
-  //             await serial.port?.forget()
-  //           } catch (error) {
-  //             console.log('already disconnected')
-  //           }
-  //           setIsConnected(false)
-  //         }
-  //         // if (serial.port == null) {
-  //         //   console.log('trying to connect')
-  //         //   setSerial(new BrowserSerial())
-  //         //   serial
-  //         //     .connect()
-  //         //     .then(() => {
-  //         //       console.log("connected");
-  //         //       setIsConnected(true);
-  //         //     })
-  //         //     .catch(() => {
-  //         //       setIsConnected(false);
-  //         //     }); //TODO: New - handle disconnect and reconnect
-  //         //   // startComms()
-  //         // }
-  //       }, 2000)
-  //     )
-  //   }
-
-  //   portScan()
-
-  //   return () => {}
-
-  // }, [])
 
