@@ -13,7 +13,7 @@ import processResults from "../../helpers/processResults";
 import { saveUnitResults } from "../../better-sqlite3";
 import { BrowserSerial } from "browser-serial";
 import { dataCleanup } from "../../helpers/serialHelpers";
-import { ipcRenderer } from 'electron';
+import { ipcRenderer } from "electron";
 
 function TestingWrapper() {
   let componentBlock;
@@ -39,66 +39,65 @@ function TestingWrapper() {
     "mode: 3": "Resistor Detect",
   };
 
-  const { isConnected, setIsConnected, pageNumber, serial } = useContext(SystemContext);
+  const { isConnected, setIsConnected, pageNumber, serial } =
+    useContext(SystemContext);
   const [rawResults, setRawResults] = useState<RawResults>({ results: null });
   const [unitDetails, setUnitDetails] = useState<UnitDetails>(baseUnitDetails);
   const [testingInProgress, setTestingInProgress] = useState(true);
-  const [canProcessResults, setCanProcessResults] = useState(false)
+  const [canProcessResults, setCanProcessResults] = useState(false);
 
-  const [deviceMode, setDeviceMode] = useState("Press Reset Button")
+  const [deviceMode, setDeviceMode] = useState("Press Reset Button");
 
   const connectToReader = async () => {
-
-    console.log('pre-connect port state: =>>', serial.current.port)
-    serial.current.connect()
-        .then(() => {
-          console.log('connect port state: =>>', serial.current.port)
-          setIsConnected(true);
-        })
-        .catch((error) => {
-          console.log('connect error port state: =>>', serial.current.port)
-          console.log('Error connecting to reader: ', error)
-          setIsConnected(false);
-        })
-  }
+    serial.current
+      .connect()
+      .then(() => {
+        setIsConnected(true);
+      })
+      .catch((error) => {
+        console.log("Error connecting to reader: ", error);
+        setIsConnected(false);
+      });
+  };
 
   const readSerial = async () => {
     // read data line by line as it comes in
-    let results:Array<string> = []
-    let cleanedData
-    let lineReader = serial.current.readLineGenerator()
-    let unitMode = 'unknown' // Not relying on state to be updated in time to use
+    let results: Array<string> = [];
+    let cleanedData;
+    let lineReader = serial.current.readLineGenerator();
+    let unitMode = "unknown"; // Not relying on state to be updated in time to use
 
     try {
-      for await (let { value, done } of lineReader) {   
+      for await (let { value, done } of lineReader) {
         if (value) {
-          results.push(value)
-          
+          results.push(value);
+          console.log(value)
+
           // Start statement has been received
-          if (results[0] == '< start' && results[2] == '>'){
-            console.log(results[1])
-            unitMode = results[1]
-            setDeviceMode(deviceModeLookup[results[1]])
-            results = []
+          if (results[0] == "< start" && results[2] == ">") {
+            console.log(results[1]);
+            unitMode = results[1];
+            setDeviceMode(deviceModeLookup[results[1]]);
+            results = [];
           }
 
           // startin state
-          if (unitMode == 'unknown') {
-            continue
-          } 
+          if (unitMode == "unknown") {
+            continue;
+          }
 
-          if (unitMode == 'mode: 2') {    
+          if (unitMode == "mode: 2") {
             // process results if automatic mode
-            cleanedData = dataCleanup(results)
-            if (cleanedData.results.length > 1){
-              //console.log(cleanedData)
-              setRawResults(cleanedData)
-              results = []
+            cleanedData = dataCleanup(results);
+            if (cleanedData.results.length > 1) {
+              // console.log(cleanedData)
+              setRawResults(cleanedData);
+              results = [];
             }
-          } 
+          }
 
-          if (unitMode == 'mode: 1' && results.at(-1) == '>') { 
-            results = []
+          if (unitMode == "mode: 1" && results.at(-1) == ">") {
+            results = [];
             // Currently throw all the results away if not mode 2
             // If the unit fails in any way, it will output the results anyway, which
             // the system doesn't know what to do with, and keeps appending results
@@ -109,27 +108,27 @@ function TestingWrapper() {
           break;
         }
       }
-    } catch (error:any) {
+    } catch (error: any) {
       // Ignoring the error if it catches the port already being opened
-      let errorString = error.toString()
-      const pattern = new RegExp("A call to open()")
-      if (errorString.search(pattern) !=-1) {
+      let errorString = error.toString();
+      const pattern = new RegExp("A call to open()");
+      if (errorString.search(pattern) != -1) {
         //console.log('Ignoring error - Port already opened')
-        return
+        return;
       } else {
         //console.log("Error out from reader loop: \n", error)
       }
     }
-  }
+  };
 
   const disconnect = async () => {
     // See if reader needs to be unlocked first.
-    if (serial.current.port?.readable.locked == true){
+    if (serial.current.port?.readable.locked == true) {
       await serial.current.reader?.cancel();
     }
 
     // See if writer needs to be unlocked first.
-    if (serial.current.port?.writable.locked == true){
+    if (serial.current.port?.writable.locked == true) {
       await serial.current.writeToStream.getWriter().close();
     }
 
@@ -140,26 +139,25 @@ function TestingWrapper() {
 
     setIsConnected(false);
     setDeviceMode("Press Reset Button");
-  }
-
-  const readPortStatus = () => {
-    console.log('readPortStatus port state: =>>', serial.current.port)
-  }
+  };
 
   const resetSerialComms = async () => {
-      // If the port has already been disconnected, then just connect to it      
-      if (serial.current.port == null || serial.current.port.readable == null){
-        serial.current = new BrowserSerial()
-        connectToReader()
-      } else {
-        serial.current.disconnect().then(() => {
-          serial.current.port?.close()
-          serial.current = new BrowserSerial()
-        }).then(() => {
-          connectToReader()
+    // If the port has already been disconnected, then just connect to it
+    if (serial.current.port == null || serial.current.port.readable == null) {
+      serial.current = new BrowserSerial();
+      connectToReader();
+    } else {
+      serial.current
+        .disconnect()
+        .then(() => {
+          serial.current.port?.close();
+          serial.current = new BrowserSerial();
         })
-      }
-  }
+        .then(() => {
+          connectToReader();
+        });
+    }
+  };
 
   switch (pageNumber) {
     case 0:
@@ -220,7 +218,13 @@ function TestingWrapper() {
             baseUnitDetails={baseUnitDetails}
             setUnitDetails={setUnitDetails}
           />
-          <BackButton text="Back" marginOverride="mt-10" />
+          <BackButton
+            text="Back"
+            marginOverride="mt-10"
+            unitDetails={unitDetails}
+            baseUnitDetails={baseUnitDetails}
+            setUnitDetails={setUnitDetails}
+          />
         </>
       );
       break;
@@ -230,119 +234,127 @@ function TestingWrapper() {
 
   useEffect(() => {
     if (pageNumber == 1 || pageNumber == 0) {
-      setCanProcessResults(false)
+      setCanProcessResults(false);
       setTestingInProgress(true);
     }
 
     if (pageNumber == 2) {
-      setCanProcessResults(true)
+      setCanProcessResults(true);
     }
 
-    return () => {}
+    return () => {};
   }, [pageNumber]);
- 
 
   useEffect(() => {
     if (serial.current.port == null) {
-      connectToReader()
+      connectToReader();
     }
 
-    return () => {}
+    return () => {};
   }, [serial.current.port]);
 
   // Read Serial on Loop, clean incoming data
   useEffect(() => {
     if (isConnected == true) {
       //console.log('initial connect')
-      readSerial()
+      readSerial();
     }
 
-    return () => {}
-
+    return () => {};
   }, [isConnected]);
 
   /* Want to have more processing logic, to stop the unit from continuing to read / process data while not in a test state */
   useEffect(() => {
     const processRawResults = () => {
       // let serialCommsWrite = serialComms.writeData //TODO: will this cause issues? Yes, yes it does
-      let dataToWrite = processResults(
-        rawResults,
-        unitDetails,
-        { setUnitDetails },
-      );
-      serial.current.write(dataToWrite)
+      let dataToWrite = processResults(rawResults, unitDetails, {
+        setUnitDetails,
+      });
+      serial.current.write(dataToWrite);
     };
 
-    if (canProcessResults){
+    if (canProcessResults) {
       processRawResults();
-    } 
+    }
 
     return () => {};
-
   }, [rawResults]);
 
   // If the test has a pass or fail result
   useEffect(() => {
     const finaliseResults = () => {
       saveUnitResults(unitDetails);
+      console.log(unitDetails);
     };
 
     if (unitDetails.result == "pass" || unitDetails.result == "fail") {
       finaliseResults();
       setTestingInProgress(false);
-      setCanProcessResults(false)
+      setCanProcessResults(false);
     }
 
-    return () => {}
-
+    return () => {};
   }, [unitDetails.result]);
 
   useEffect(() => {
-    ipcRenderer.on('serial-port-removed', (event, details) => {
+    ipcRenderer.on("serial-port-removed", (event, details) => {
       //console.log('Disconnecting reader')
-      setDeviceMode("Press Reset Button")
-      setIsConnected(false)
-    })
-    ipcRenderer.on('serial-port-added', (event, details) => {
-      setDeviceMode("Press Reset Button")
+      setDeviceMode("Press Reset Button");
+      setIsConnected(false);
+    });
+    ipcRenderer.on("serial-port-added", (event, details) => {
+      setDeviceMode("Press Reset Button");
       //console.log('Reconnecting reader')
-    })
+    });
 
     // Clean up the listener when the component unmounts
-    return () =>  {
-      ipcRenderer.removeListener('serial-port-removed', () => {});
-      ipcRenderer.removeListener('serial-port-added', () => {});
+    return () => {
+      ipcRenderer.removeListener("serial-port-removed", () => {});
+      ipcRenderer.removeListener("serial-port-added", () => {});
     };
-
-  }, [])
+  }, []);
 
   return (
     <div className="w-full h-screen flex flex-col justify-center">
       <div className="text-right pb-20 px-4 absolute top-32 right-10">
         <div className="">
-          Device Mode: {" "}
-          <span className={`${deviceMode == "Automatic" ? "text-acceptable-green" : "text-orange"}`}>
+          Device Mode:{" "}
+          <span
+            className={`${
+              deviceMode == "Automatic"
+                ? "text-acceptable-green"
+                : "text-orange"
+            }`}
+          >
             {deviceMode}
-          </span> 
+          </span>
         </div>
-
         Device Connected:{" "}
         {isConnected ? (
           <span className="text-acceptable-green">Connected</span>
         ) : (
-          <span className="text-cancel cursor-pointer hover:scale-10">Disconnected</span>
+          <span className="text-cancel cursor-pointer hover:scale-10">
+            Disconnected
+          </span>
         )}
-        {!isConnected ? <div className="text-zip-dark cursor-pointer hover:scale-105 hover:text-acceptable-green" onClick={async () => {
-          await resetSerialComms()
-        }}>Reconnect comms</div> : <></>}
-       
+        {!isConnected ? (
+          <div
+            className="text-zip-dark cursor-pointer hover:scale-105 hover:text-acceptable-green"
+            onClick={async () => {
+              await resetSerialComms();
+            }}
+          >
+            Reconnect comms
+          </div>
+        ) : (
+          <></>
+        )}
       </div>
       {componentBlock}
-      <button onClick={disconnect}>Disconnect</button>
-      <button onClick={readPortStatus}>Read Port Status</button>
+      {/* <button onClick={disconnect}>Disconnect</button> */}
+      {/* <button onClick={readPortStatus}>Read Port Status</button> */}
     </div>
   );
 }
 
 export default TestingWrapper;
-
