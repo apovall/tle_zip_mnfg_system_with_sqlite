@@ -71,7 +71,6 @@ function TestingWrapper() {
       for await (let { value, done } of lineReader) {
         if (value) {
           results.push(value);
-          console.log(value)
 
           // Start statement has been received
           if (results[0] == "< start" && results[2] == ">") {
@@ -250,6 +249,8 @@ function TestingWrapper() {
       connectToReader();
     }
 
+    console.log("Port has changed ==>>", serial.current.port);
+
     return () => {};
   }, [serial.current.port]);
 
@@ -297,20 +298,48 @@ function TestingWrapper() {
   }, [unitDetails.result]);
 
   useEffect(() => {
+    let isMounted = true;
     ipcRenderer.on("serial-port-removed", (event, details) => {
       //console.log('Disconnecting reader')
       setDeviceMode("Press Reset Button");
+      disconnect()
       setIsConnected(false);
     });
     ipcRenderer.on("serial-port-added", (event, details) => {
       setDeviceMode("Press Reset Button");
+      // connectToReader();
       //console.log('Reconnecting reader')
     });
+
+    const handleDeviceMode = async () => {
+      if (isMounted) {
+        console.log(serial.current.port);
+        if (serial.current.port == null || serial.current.port.readable == null){
+          setIsConnected(false)
+          setDeviceMode("Press Reset Button");
+          try {
+            await serial.current.writeToStream.getWriter().close();
+            await new Promise((resolve) => {setTimeout(resolve, 250)})
+            serial.current.port?.close();
+            await new Promise((resolve) => {setTimeout(resolve, 250)})
+          } catch (error) {
+            console.log('could not close port', error)
+          }
+        }
+      }
+    };
+
+    const intervalId = setInterval(handleDeviceMode, 2000);
 
     // Clean up the listener when the component unmounts
     return () => {
       ipcRenderer.removeListener("serial-port-removed", () => {});
       ipcRenderer.removeListener("serial-port-added", () => {});
+      ipcRenderer.removeListener("suspend", () => {});
+      ipcRenderer.removeListener("resume", () => {});
+      ipcRenderer.removeListener("lock-screen", () => {});
+      isMounted = false;
+      clearInterval(intervalId);
     };
   }, []);
 
@@ -345,6 +374,16 @@ function TestingWrapper() {
             }}
           >
             Reconnect comms
+          </div>
+        ) : (
+          <></>
+        )}
+        {isConnected ? (
+          <div
+            className="text-zip-dark cursor-pointer hover:scale-105 hover:text-orange"
+            onClick={disconnect}
+          >
+            Manually disconnect
           </div>
         ) : (
           <></>
