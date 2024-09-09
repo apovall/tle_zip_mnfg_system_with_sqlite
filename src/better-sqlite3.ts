@@ -11,6 +11,23 @@ let database: Database.Database
 const tableName = 'zip_h2_manufacturing_test'
 
 export function createTable(tableName:string) {
+  /* Schema for the table
+    
+  qrCode: string | null,
+    batchNumber: string | null,
+    resistorLoaded: number | null,
+    result: "pass" | "fail" | null
+    batt_contact_ok: "pass" | "fail" null
+    batt_voltage_ok: "pass" | "fail" null
+    tilt_sw_opens: "pass" | "fail" null
+    tilt_sw_closes: "pass" | "fail" null
+    resistance_ok: "pass" | "fail" null
+    resistance: "unknown" | number | null
+    vcell_loaded: number | null
+    vcell_unloaded: number | null
+
+  */
+ 
   const createTable = database.prepare(`
     CREATE TABLE IF NOT EXISTS ${tableName} (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -19,15 +36,14 @@ export function createTable(tableName:string) {
       timestamp TEXT,
       qrCode TEXT,
       result TEXT,
-      batt_contact_ok BOOLEAN,
-      batt_voltage_ok BOOLEAN,
-      tilt_sw_opens BOOLEAN,
-      tilt_sw_closes BOOLEAN,
-      resistance_ok BOOLEAN,
+      batt_contact_ok TEXT,
+      batt_voltage_ok TEXT,
+      tilt_sw_opens TEXT,
+      tilt_sw_closes TEXT,
+      resistance_ok TEXT,
       resistance REAL,
       vcell_loaded REAL,
-      vcell_unloaded REAL,
-      action TEXT NOT NULL
+      vcell_unloaded REAL
     );
   `);
   createTable.run();
@@ -79,27 +95,25 @@ export function saveUnitResults(data:UnitDetails){
       resistance_ok,
       resistance,
       vcell_loaded,
-      vcell_unloaded,
-      action
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      vcell_unloaded
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
   `);
 
-  let timestamp = new Date().toLocaleString()
+  const timestamp = new Date().toLocaleString('en-NZ', { timeZone: 'Pacific/Auckland', hour12: false });
   let result = stmt.run(
     data.batchNumber,
     data.resistorLoaded,
     timestamp,
     data.qrCode,
     data.result,
-    data.batt_contact_ok,
-    data.batt_voltage_ok,
-    data.tilt_sw_opens,
-    data.tilt_sw_closes,
-    data.resistance_ok,
-    data.resistance,
-    data.vcell_loaded,
-    data.vcell_unloaded,
-    data.action
+    data.batt_contact_ok == "unknown" ? null : data.batt_contact_ok,
+    data.batt_voltage_ok == "unknown" ? null : data.batt_voltage_ok,
+    data.tilt_sw_opens == "unknown" ? null : data.tilt_sw_opens,
+    data.tilt_sw_closes == "unknown" ? null : data.tilt_sw_closes,
+    data.resistance_ok == "unknown" ? null : data.resistance_ok,
+    data.resistance == 'unknown' ? null : data.resistance,
+    data.vcell_loaded == 'unknown' ? null : data.vcell_loaded,
+    data.vcell_unloaded == 'unknown' ? null : data.vcell_unloaded
   );
   console.log("saving ==>", result)
 }

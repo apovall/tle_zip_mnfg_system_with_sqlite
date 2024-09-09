@@ -2,18 +2,18 @@ import { BrowserSerial } from 'browser-serial'
 import { Dispatch, MutableRefObject, SetStateAction } from 'react'
 
 export interface UnitDetails {
-  qrCode: string | undefined,
+  qrCode: string | null,
   batchNumber: string | null,
   resistorLoaded: number | null,
-  result: string | null
+  result: "pass" | "fail" | null
   batt_contact_ok: "pass" | "fail" | "unknown" | null
   batt_voltage_ok: "pass" | "fail" | "unknown" | null
   tilt_sw_opens: "pass" | "fail" | "unknown" | null
   tilt_sw_closes: "pass" | "fail" | "unknown" | null
   resistance_ok: "pass" | "fail" | "unknown" | null
-  resistance: string | null
-  vcell_loaded: string | number | null
-  vcell_unloaded: string | number | null
+  resistance: "unknown" | "error" | number | null
+  vcell_loaded: "unknown" | number | null
+  vcell_unloaded: "unknown" | number | null
   action: "hold" | "flip" | "pass" | "fail";
 }
 
@@ -49,8 +49,8 @@ export interface TestParameters {
 }
 
 export interface SystemContextProps {
-  activeJob: "select" | "test" | "assemble"
-  setActiveJob: Dispatch<SetStateAction<"select" | "test" | "assemble">>
+  activeJob: "select" | "test" | "assemble" | "resistor_check";
+  setActiveJob: Dispatch<SetStateAction<"select" | "test" | "assemble" | "resistor_check">>
   pageNumber: number;
   setPageNumber: Dispatch<SetStateAction<number>>;
   isConnected: boolean;

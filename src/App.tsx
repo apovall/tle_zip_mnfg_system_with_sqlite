@@ -35,6 +35,11 @@ function App() {
         ) : (
           <></>
         )}
+        {systemContext.activeJob == "resistor_check" ? (
+          <TestingWrapper />
+        ) : (
+          <></>
+        )}
       </div>
     </div>
   );

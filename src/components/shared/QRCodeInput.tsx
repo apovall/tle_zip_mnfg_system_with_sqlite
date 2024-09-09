@@ -6,7 +6,7 @@ interface UnitInputProps {
   label: string;
   setInputValues: Dispatch<SetStateAction<UnitDetails>>;
   target: string;
-  value: string | number | undefined;
+  value: string | number | null;
 }
 
 function QRCodeInput({label, setInputValues, target, value}:UnitInputProps) {

@@ -7,6 +7,7 @@ function TestParameterFeedback({text, value, status}:TestParameters) {
   let icon
   let displayedValue
   let iconSize = 40
+  let errorText = value == 'error' ? 'text-cancel' : "null"
 
   switch (status) {
     case "pass":
@@ -15,13 +16,16 @@ function TestParameterFeedback({text, value, status}:TestParameters) {
     case "fail":
       icon = <FaTimes size={iconSize} color="#B93535"/>
       break;
+    case "unknown":
+      icon = <FaMinus className="text-right" size={iconSize} color="#3774a9"/>
+      break;
   
     default:
       icon = <></>
       break;
   }
 
-  if (value === 'unknown'){
+  if (value == 'unknown'){
     displayedValue = <FaMinus className="text-right" size={iconSize} color="#3774a9"/>
   } else {
     displayedValue = value
@@ -31,7 +35,7 @@ function TestParameterFeedback({text, value, status}:TestParameters) {
     <div className='flex flex-row flex-nowrap justify-between mb-4 ml-4 text-xl sm:text-2xl mb:text-3xl lg:text-4xl h-[60px]'>
       <h1 className={`text-left my-2`}>{text}:</h1>
       <div className="flex flex-col justify-center">
-        { value !== null ? <h2 className={`text-right my-2`}>{displayedValue}</h2> : <span className="text-right my-4">{icon}</span>}
+        { value !== null ? <h2 className={`text-right my-2 ${errorText}`}>{displayedValue}</h2> : <span className="text-right my-4">{icon}</span>}
       </div>
     </div>
   )

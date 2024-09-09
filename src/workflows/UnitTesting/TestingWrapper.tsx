@@ -14,13 +14,14 @@ import { saveUnitResults } from "../../better-sqlite3";
 import { BrowserSerial } from "browser-serial";
 import { dataCleanup } from "../../helpers/serialHelpers";
 import { ipcRenderer } from "electron";
+import ResistorTestFeedback from "../ResistorTesting/ResistorTestFeedback";
 
 function TestingWrapper() {
   let componentBlock;
   let baseUnitDetails: UnitDetails = {
     batchNumber: null,
     resistorLoaded: 3600,
-    qrCode: undefined,
+    qrCode: null,
     result: null,
     batt_contact_ok: null,
     batt_voltage_ok: null,
@@ -42,6 +43,7 @@ function TestingWrapper() {
   const { isConnected, setIsConnected, pageNumber, serial } =
     useContext(SystemContext);
   const [rawResults, setRawResults] = useState<RawResults>({ results: null });
+  const [resistorReadout, setResistorReadout] = useState<RawResults>({ results: null });
   const [unitDetails, setUnitDetails] = useState<UnitDetails>(baseUnitDetails);
   const [testingInProgress, setTestingInProgress] = useState(true);
   const [canProcessResults, setCanProcessResults] = useState(false);
@@ -74,7 +76,6 @@ function TestingWrapper() {
 
           // Start statement has been received
           if (results[0] == "< start" && results[2] == ">") {
-            console.log(results[1]);
             unitMode = results[1];
             setDeviceMode(deviceModeLookup[results[1]]);
             results = [];
@@ -87,20 +88,26 @@ function TestingWrapper() {
 
           if (unitMode == "mode: 2") {
             // process results if automatic mode
-            cleanedData = dataCleanup(results);
-            if (cleanedData.results.length > 1) {
-              // console.log(cleanedData)
+            cleanedData = dataCleanup(results, 'mode: 2');
+
+            if (cleanedData.results !== null && cleanedData.results.length > 1) {
               setRawResults(cleanedData);
               results = [];
             }
           }
 
+          if (unitMode == "mode: 3") {
+            // process results if automatic mode
+            cleanedData = dataCleanup(results, 'mode: 3');
+            if (cleanedData.results !== null && cleanedData.results.length == 1) {
+              setResistorReadout(cleanedData);
+              results = [];
+            }
+          }
+
           if (unitMode == "mode: 1" && results.at(-1) == ">") {
+            // Throw away results if mode 1
             results = [];
-            // Currently throw all the results away if not mode 2
-            // If the unit fails in any way, it will output the results anyway, which
-            // the system doesn't know what to do with, and keeps appending results
-            // ad infinitum.
           }
         }
         if (done === true) {
@@ -158,6 +165,10 @@ function TestingWrapper() {
     }
   };
 
+  // const queryMode = () => {
+  //   serial.current.write("< mode? >");
+  // }
+
   switch (pageNumber) {
     case 0:
       componentBlock = (
@@ -199,6 +210,7 @@ function TestingWrapper() {
           <NextButton
             text="Next"
             isDisabled={Object.values(unitDetails).includes(undefined)}
+            pageOverride={2}
           />
           <BackButton text="Back" />
         </>
@@ -227,12 +239,20 @@ function TestingWrapper() {
         </>
       );
       break;
+    case 3:
+      componentBlock = (
+        <>
+          <ResistorTestFeedback {...resistorReadout}/>
+          <CancelButton text="Cancel Job" disconnect={disconnect} />
+        </>
+      );
+      break;
     default:
       break;
   }
 
   useEffect(() => {
-    if (pageNumber == 1 || pageNumber == 0) {
+    if (pageNumber == 1 || pageNumber == 0 || pageNumber == 3) {
       setCanProcessResults(false);
       setTestingInProgress(true);
     }
@@ -313,7 +333,7 @@ function TestingWrapper() {
 
     const handleDeviceMode = async () => {
       if (isMounted) {
-        console.log(serial.current.port);
+        // console.log(serial.current.port);
         if (serial.current.port == null || serial.current.port.readable == null){
           setIsConnected(false)
           setDeviceMode("Press Reset Button");
@@ -350,7 +370,7 @@ function TestingWrapper() {
           Device Mode:{" "}
           <span
             className={`${
-              deviceMode == "Automatic"
+              (deviceMode == "Automatic" || deviceMode == "Resistor Detect")
                 ? "text-acceptable-green"
                 : "text-orange"
             }`}
@@ -362,7 +382,7 @@ function TestingWrapper() {
         {isConnected ? (
           <span className="text-acceptable-green">Connected</span>
         ) : (
-          <span className="text-cancel cursor-pointer hover:scale-10">
+          <span className="text-cancel cursor-pointer hover:scale-10 font-bold">
             Disconnected
           </span>
         )}
@@ -390,6 +410,9 @@ function TestingWrapper() {
         )}
       </div>
       {componentBlock}
+      
+      {/* Testing functions */}
+      {/* <button onClick={queryMode}>Query Mode</button> */}
       {/* <button onClick={disconnect}>Disconnect</button> */}
       {/* <button onClick={readPortStatus}>Read Port Status</button> */}
     </div>
