@@ -1,9 +1,7 @@
 import { useContext } from 'react'
 import { SystemContext } from "../../context/SystemContext";
 
-import { CancelButtonProps } from "../../types/interfaces"
-
-function CancelButton({ text, disconnect }: CancelButtonProps) {
+function CancelJobGeneric({ text }: {text:string}) {
 
   const { setActiveJob, setPageNumber } = useContext(SystemContext);
 
@@ -11,11 +9,7 @@ function CancelButton({ text, disconnect }: CancelButtonProps) {
     <button
       className="self-start mt-40 mx-8 text-white text-lg  rounded-2xl py-2 px-8 bg-cancel hover:scale-105 transition-transform"
       onClick={() => {
-        // disconnectReader().then(() => {
-        //   console.log('Disconnecting from cancel button')
-        // })
-        // setPageNumber(0)
-        disconnect()
+        setPageNumber(0)
         setActiveJob("select")
       }}
     >
@@ -24,4 +18,4 @@ function CancelButton({ text, disconnect }: CancelButtonProps) {
   );
 }
 
-export default CancelButton
+export default CancelJobGeneric

@@ -49,8 +49,8 @@ export interface TestParameters {
 }
 
 export interface SystemContextProps {
-  activeJob: "select" | "test" | "assemble" | "resistor_check";
-  setActiveJob: Dispatch<SetStateAction<"select" | "test" | "assemble" | "resistor_check">>
+  activeJob: "select" | "test" | "assemble" | "resistor_check" | "6-pack" | "shipping";
+  setActiveJob: Dispatch<SetStateAction<"select" | "test" | "assemble" | "resistor_check" | "6-pack" | "shipping">>
   pageNumber: number;
   setPageNumber: Dispatch<SetStateAction<number>>;
   isConnected: boolean;
@@ -71,7 +71,19 @@ export interface SerialCommsWrite {
   serialCommsWrite: (command: string) => Promise<void>
 }
 
-export interface CancelButtonProps {
+export interface CancelSerialButtonProps {
   text: string;    
   disconnect: () => void;
   }
+
+export interface AssemblyJobDetails {
+  batchNumber: string | null
+  dispenserSerial: string | null
+  pcbSerial: string | null
+  unitVariant: string | null
+}
+
+export interface BatchCodesProps {
+  pcbSerial: string | null,
+  dispenserSerial: string | null,
+}

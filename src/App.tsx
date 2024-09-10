@@ -8,14 +8,46 @@ import "./App.css";
 
 function App() {
   const systemContext = useContext(SystemContext);
+  let componentBlock
+
+  switch (systemContext.activeJob) {
+    case "select":
+      componentBlock = (
+        <>
+          <h1 className="text-center text-3xl my-16 pt-[120px]">
+            What would you like to do?
+          </h1>
+          <JobSelectorWrapper />
+        </>
+      )
+      break;
+    case "test":
+      componentBlock = (
+        <TestingWrapper />
+      )
+      break;
+    case "assemble":
+      componentBlock = (
+        <AssemblyWrapper />
+      )
+      break;
+    case "resistor_check":
+      componentBlock = (
+        <TestingWrapper />
+      )
+      break;
+  
+    default:
+      break;
+  }
 
   return (
     <div className="w-full">
       {/* <img src="/images/zip_banner.png" alt="ZIP Banner" /> */}
       <div className="">
         <img className="absolute top-0" src={`${process.env.NODE_ENV === 'production' ? './images/zip_banner.png' : '/images/zip_banner.png'}`} alt="ZIP Banner" />
-
-        {systemContext.activeJob == "select" ? (
+        {componentBlock}
+        {/* {systemContext.activeJob == "select" ? (
           <>
             <h1 className="text-center text-3xl my-16 pt-[120px]">
               What would you like to do?
@@ -39,7 +71,7 @@ function App() {
           <TestingWrapper />
         ) : (
           <></>
-        )}
+        )} */}
       </div>
     </div>
   );

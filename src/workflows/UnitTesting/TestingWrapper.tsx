@@ -4,7 +4,7 @@ import ResistorSelect from "../../components/shared/ResistorSelect";
 import QRCodeInput from "../../components/shared/QRCodeInput";
 import NextButton from "../../components/shared/NextButton";
 import BackButton from "../../components/shared/BackButton";
-import CancelButton from "../../components/shared/CancelButton";
+import CancelSerialButton from "../../components/shared/CancelSerialButton";
 import CompleteTestButton from "../../components/shared/CompleteTestButton";
 import { SystemContext } from "../../context/SystemContext";
 import TestFeedbackWrapper from "./TestFeedbackWrapper";
@@ -194,7 +194,7 @@ function TestingWrapper() {
               unitDetails["resistorLoaded"] == null
             }
           />
-          <CancelButton text="Cancel Job" disconnect={disconnect} />
+          <CancelSerialButton text="Cancel Job" disconnect={disconnect} />
         </>
       );
       break;
@@ -243,7 +243,7 @@ function TestingWrapper() {
       componentBlock = (
         <>
           <ResistorTestFeedback {...resistorReadout}/>
-          <CancelButton text="Cancel Job" disconnect={disconnect} />
+          <CancelSerialButton text="Cancel Job" disconnect={disconnect} />
         </>
       );
       break;

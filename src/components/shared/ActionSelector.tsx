@@ -6,7 +6,7 @@ function ActionSelector({
   text,
   disabled = false,
 }: {
-  type: "test" | "assemble" | "resistor_check";
+  type: "test" | "assemble" | "resistor_check" | "6-pack" | "shipping";
   text: string;
   disabled?: boolean;
 }) {
@@ -14,7 +14,7 @@ function ActionSelector({
   const bgColour = type == "test" ? "bg-zip-light" : "bg-zip-dark";
   const size = type == "test" ? "w-[500px] h-[500px]" : "w-[225px] h-[225px]";
   const fontSize = type == "test" ? "text-4xl" : "text-2xl";
-  const disabledStyling = disabled ? "opacity-50" : "hover:scale-105 hover:rounded-xl cursor-pointer";
+  const disabledStyling = disabled ? "opacity-50" : "hover:scale-105 hover:rounded-xl cursor-pointer disabled";
 
   return (
     <div
@@ -25,14 +25,33 @@ function ActionSelector({
         `}
       onClick={() => {
         // Temporarily disabled
-        if (type=='test'){
-          systemContext.setPageNumber(0)
-          systemContext.setActiveJob(type)
+        switch (type) {
+          case 'test':
+            systemContext.setPageNumber(0)
+            break;
+          case 'assemble':
+            systemContext.setPageNumber(4)
+          break;
+          case 'resistor_check':
+            systemContext.setPageNumber(3)
+          break;
+          default:
+            return
+            break;
         }
-        if (type=='resistor_check'){
-          systemContext.setPageNumber(3)
-          systemContext.setActiveJob(type)
-        }
+        systemContext.setActiveJob(type)
+        // if (type=='test'){
+          //   systemContext.setPageNumber(0)
+          //   systemContext.setActiveJob(type)
+          // }
+          // if (type=='resistor_check'){
+            //   systemContext.setPageNumber(3)
+            //   systemContext.setActiveJob(type)
+            // }
+            // if (type=='resistor_check'){
+              //   systemContext.setPageNumber(3)
+              // systemContext.setActiveJob(type)
+        // }
       }}
     >
       <h1 className={`${fontSize} self-center text-white text-center mx-4`}>{text}</h1>

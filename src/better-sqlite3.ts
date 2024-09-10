@@ -9,27 +9,10 @@ const root = import.meta.env.VITE_COMMAND === 'serve'
 const TAG = '[better-sqlite3]'
 let database: Database.Database
 const tableName = 'zip_h2_manufacturing_test'
-
-export function createTable(tableName:string) {
-  /* Schema for the table
-    
-  qrCode: string | null,
-    batchNumber: string | null,
-    resistorLoaded: number | null,
-    result: "pass" | "fail" | null
-    batt_contact_ok: "pass" | "fail" null
-    batt_voltage_ok: "pass" | "fail" null
-    tilt_sw_opens: "pass" | "fail" null
-    tilt_sw_closes: "pass" | "fail" null
-    resistance_ok: "pass" | "fail" null
-    resistance: "unknown" | number | null
-    vcell_loaded: number | null
-    vcell_unloaded: number | null
-
-  */
- 
-  const createTable = database.prepare(`
-    CREATE TABLE IF NOT EXISTS ${tableName} (
+// const tableNames = {"test": "zip_h2_manufacturing_test", "assembly": "zip_h2_assembly"}
+const tableSchema = {
+  "zip_h2_manufacturing_test": `
+    CREATE TABLE IF NOT EXISTS zip_h2_manufacturing_test (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       batchNumber TEXT,
       resistorLoaded REAL,
@@ -45,12 +28,66 @@ export function createTable(tableName:string) {
       vcell_loaded REAL,
       vcell_unloaded REAL
     );
-  `);
+  `,
+  "zip_h2_assembly": `
+    CREATE TABLE IF NOT EXISTS zip_h2_assembly (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      batch_number TEXT,
+      dispenser_serial TEXT,
+      pcb_serial TEXT,
+      dispenser_type TEXT,
+      timestamp TEXT
+    );
+  `
+}
+
+export function createTable(schema:string) {
+  /* Schema for the table
+    
+    qrCode: string | null,
+    batchNumber: string | null,
+    resistorLoaded: number | null,
+    result: "pass" | "fail" | null
+    batt_contact_ok: "pass" | "fail" null
+    batt_voltage_ok: "pass" | "fail" null
+    tilt_sw_opens: "pass" | "fail" null
+    tilt_sw_closes: "pass" | "fail" null
+    resistance_ok: "pass" | "fail" null
+    resistance: "unknown" | number | null
+    vcell_loaded: number | null
+    vcell_unloaded: number | null
+
+  */
+ 
+  // const createTable = database.prepare(`
+  //   CREATE TABLE IF NOT EXISTS ${tableName} (
+  //     id INTEGER PRIMARY KEY AUTOINCREMENT,
+  //     batchNumber TEXT,
+  //     resistorLoaded REAL,
+  //     timestamp TEXT,
+  //     qrCode TEXT,
+  //     result TEXT,
+  //     batt_contact_ok TEXT,
+  //     batt_voltage_ok TEXT,
+  //     tilt_sw_opens TEXT,
+  //     tilt_sw_closes TEXT,
+  //     resistance_ok TEXT,
+  //     resistance REAL,
+  //     vcell_loaded REAL,
+  //     vcell_unloaded REAL
+  //   );
+  // `);
+  const createTable = database.prepare(schema);
   createTable.run();
 }
 
-function readTable(tableName:string) {
-  const selectStatement = database.prepare(`SELECT * FROM ${tableName}`);
+export function readTable(tableName:string, clause?:string) {
+  let query = `SELECT * FROM ${tableName}`;
+  if (clause) {
+    query += ` ${clause};`;
+  }
+  console.log("query", query)
+  const selectStatement = database.prepare(query);
   const rows = selectStatement.all();
   return rows;
 }
@@ -74,9 +111,12 @@ export function getSqlite3(filename: string) {
     // https://github.com/WiseLibs/better-sqlite3/blob/v8.5.2/lib/database.js#L50
     nativeBinding: dbPath,
   })
-  createTable(tableName)
-  const rows = readTable(tableName)
-  console.log(rows)
+  createTable(tableSchema['zip_h2_manufacturing_test'])
+  createTable(tableSchema['zip_h2_assembly'])
+  let rows = readTable('zip_h2_manufacturing_test')
+  console.log("zip_h2_manufacturing_test table: \n", rows)
+  rows = readTable('zip_h2_assembly')
+  console.log("zip_h2_assembly table: \n", rows)
   return database
 }
 
@@ -114,6 +154,28 @@ export function saveUnitResults(data:UnitDetails){
     data.resistance == 'unknown' ? null : data.resistance,
     data.vcell_loaded == 'unknown' ? null : data.vcell_loaded,
     data.vcell_unloaded == 'unknown' ? null : data.vcell_unloaded
+  );
+  console.log("saving ==>", result)
+}
+
+export function saveAssemblyResults(data:any){
+  const stmt = database.prepare(`
+    INSERT INTO zip_h2_assembly (
+      batch_number,
+      dispenser_serial,
+      pcb_serial,
+      dispenser_type,
+      timestamp
+    ) VALUES (?, ?, ?, ?, ?)
+  `);
+
+  const timestamp = new Date().toLocaleString('en-NZ', { timeZone: 'Pacific/Auckland', hour12: false });
+  let result = stmt.run(
+    data.batchNumber,
+    data.dispenserSerial,
+    data.pcbSerial,
+    data.dispenserType,
+    timestamp
   );
   console.log("saving ==>", result)
 }

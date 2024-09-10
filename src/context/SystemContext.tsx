@@ -21,7 +21,13 @@ interface SystemProviderProps {
 
 export const SystemContextProvider:FC<SystemProviderProps> = ({children}) => {
   const [pageNumber, setPageNumber] = useState(0)
-  const [activeJob, setActiveJob] = useState<"select" | "test" | "assemble" | "resistor_check">("select")
+  const [activeJob, setActiveJob] = useState<
+    "select" 
+    | "test" 
+    | "assemble" 
+    | "resistor_check" 
+    | "6-pack" 
+    | "shipping">("select")
   const [isConnected, setIsConnected] = useState(false)
 
   const serial = useRef(new BrowserSerial())
