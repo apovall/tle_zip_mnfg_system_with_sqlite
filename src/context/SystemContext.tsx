@@ -1,9 +1,6 @@
 import { createContext, FC, useState, ReactNode, useRef } from 'react';
 import { BrowserSerial } from "browser-serial";
 import { SystemContextProps } from '@/types/interfaces';
-import Database from 'better-sqlite3'
-import { saveUnitResults } from '../better-sqlite3';
-
 
 export const SystemContext = createContext<SystemContextProps>({
   activeJob: "select",

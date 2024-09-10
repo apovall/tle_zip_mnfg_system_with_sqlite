@@ -32,6 +32,7 @@ function TestingWrapper() {
     vcell_loaded: null,
     vcell_unloaded: null,
     action: "hold",
+    h2cellBatch: null
   };
 
   const deviceModeLookup: { [key: string]: string } = {
@@ -186,6 +187,13 @@ function TestingWrapper() {
             setInputValues={setUnitDetails}
             target="batchNumber"
             value={unitDetails["batchNumber"]}
+            submitOverride={true}
+          />
+          <TextInput
+            label="H2 Cell Batch Number"
+            setInputValues={setUnitDetails}
+            target="h2cellBatch"
+            value={unitDetails["h2cellBatch"]}
           />
           <NextButton
             text="Start tests"
@@ -287,10 +295,11 @@ function TestingWrapper() {
   /* Want to have more processing logic, to stop the unit from continuing to read / process data while not in a test state */
   useEffect(() => {
     const processRawResults = () => {
-      // let serialCommsWrite = serialComms.writeData //TODO: will this cause issues? Yes, yes it does
       let dataToWrite = processResults(rawResults, unitDetails, {
         setUnitDetails,
       });
+      console.log('In Process Raw Results =====>')
+      console.log(unitDetails)
       serial.current.write(dataToWrite);
     };
 

@@ -15,6 +15,7 @@ export interface UnitDetails {
   vcell_loaded: "unknown" | number | null
   vcell_unloaded: "unknown" | number | null
   action: "hold" | "flip" | "pass" | "fail";
+  h2cellBatch: string | null;
 }
 
 export interface SetUnitDetails {
@@ -36,6 +37,7 @@ export interface TextInputProps {
   target: string;
   value: string | null;
   autoFocus?: boolean;
+  submitOverride?: boolean;
 }
 
 export interface RawResults {

@@ -26,7 +26,8 @@ const tableSchema = {
       resistance_ok TEXT,
       resistance REAL,
       vcell_loaded REAL,
-      vcell_unloaded REAL
+      vcell_unloaded REAL,
+      h2cellBatch TEXT
     );
   `,
   "zip_h2_assembly": `
@@ -39,57 +40,6 @@ const tableSchema = {
       timestamp TEXT
     );
   `
-}
-
-export function createTable(schema:string) {
-  /* Schema for the table
-    
-    qrCode: string | null,
-    batchNumber: string | null,
-    resistorLoaded: number | null,
-    result: "pass" | "fail" | null
-    batt_contact_ok: "pass" | "fail" null
-    batt_voltage_ok: "pass" | "fail" null
-    tilt_sw_opens: "pass" | "fail" null
-    tilt_sw_closes: "pass" | "fail" null
-    resistance_ok: "pass" | "fail" null
-    resistance: "unknown" | number | null
-    vcell_loaded: number | null
-    vcell_unloaded: number | null
-
-  */
- 
-  // const createTable = database.prepare(`
-  //   CREATE TABLE IF NOT EXISTS ${tableName} (
-  //     id INTEGER PRIMARY KEY AUTOINCREMENT,
-  //     batchNumber TEXT,
-  //     resistorLoaded REAL,
-  //     timestamp TEXT,
-  //     qrCode TEXT,
-  //     result TEXT,
-  //     batt_contact_ok TEXT,
-  //     batt_voltage_ok TEXT,
-  //     tilt_sw_opens TEXT,
-  //     tilt_sw_closes TEXT,
-  //     resistance_ok TEXT,
-  //     resistance REAL,
-  //     vcell_loaded REAL,
-  //     vcell_unloaded REAL
-  //   );
-  // `);
-  const createTable = database.prepare(schema);
-  createTable.run();
-}
-
-export function readTable(tableName:string, clause?:string) {
-  let query = `SELECT * FROM ${tableName}`;
-  if (clause) {
-    query += ` ${clause};`;
-  }
-  console.log("query", query)
-  const selectStatement = database.prepare(query);
-  const rows = selectStatement.all();
-  return rows;
 }
 
 export function getSqlite3(filename: string) {
@@ -113,16 +63,38 @@ export function getSqlite3(filename: string) {
   })
   createTable(tableSchema['zip_h2_manufacturing_test'])
   createTable(tableSchema['zip_h2_assembly'])
+
+  // Check if necessary to add new column to the table specified
+  // Doing it this way allows the app to always be kept up to date programatically 
+  // with no user-manual intervention required
+  updateTableSchema("zip_h2_manufacturing_test", {name: "h2cellBatch", type: "TEXT"})
+
   let rows = readTable('zip_h2_manufacturing_test')
   console.log("zip_h2_manufacturing_test table: \n", rows)
   rows = readTable('zip_h2_assembly')
   console.log("zip_h2_assembly table: \n", rows)
   return database
 }
+// From tableSchema object
+export function createTable(schema:string) {
+  const createTable = database.prepare(schema);
+  createTable.run();
+}
+
+export function readTable(tableName:string, clause?:string) {
+  let query = `SELECT * FROM ${tableName}`;
+  if (clause) {
+    query += ` ${clause};`;
+  }
+  console.log("query", query)
+  const selectStatement = database.prepare(query);
+  const rows = selectStatement.all();
+  return rows;
+}
 
 export function saveUnitResults(data:UnitDetails){
   const stmt = database.prepare(`
-    INSERT INTO ${tableName} (
+    INSERT INTO zip_h2_manufacturing_test (
       batchNumber,
       resistorLoaded,
       timestamp,
@@ -135,8 +107,9 @@ export function saveUnitResults(data:UnitDetails){
       resistance_ok,
       resistance,
       vcell_loaded,
-      vcell_unloaded
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      vcell_unloaded,
+      h2cellBatch
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
   `);
 
   const timestamp = new Date().toLocaleString('en-NZ', { timeZone: 'Pacific/Auckland', hour12: false });
@@ -153,7 +126,8 @@ export function saveUnitResults(data:UnitDetails){
     data.resistance_ok == "unknown" ? null : data.resistance_ok,
     data.resistance == 'unknown' ? null : data.resistance,
     data.vcell_loaded == 'unknown' ? null : data.vcell_loaded,
-    data.vcell_unloaded == 'unknown' ? null : data.vcell_unloaded
+    data.vcell_unloaded == 'unknown' ? null : data.vcell_unloaded,
+    data.h2cellBatch
   );
   console.log("saving ==>", result)
 }
@@ -178,4 +152,47 @@ export function saveAssemblyResults(data:any){
     timestamp
   );
   console.log("saving ==>", result)
+}
+
+// Used for adding new table columns to a specific table, after the tables have already
+// been created.
+function updateTableSchema(tableName:string, newColumn:{name:string, type:string}){
+  const columns = getColumnNamesAndTypes(tableName);
+  let columnExists = false
+
+  columns.forEach((column) => {
+    if (columnExists){
+      return
+    } 
+    if (column.name == newColumn.name){
+      columnExists = true
+      console.log("Column already exists")
+      return
+    }
+  })
+
+  if (columnExists){
+    return
+  } else {
+    addColumnToTable(tableName, newColumn.name, newColumn.type)
+  }
+
+}
+
+function addColumnToTable(tableName:string, columnName:string, columnType:string){
+  const stmt = database.prepare(`ALTER TABLE ${tableName} ADD COLUMN ${columnName} ${columnType}`);
+  stmt.run();
+}
+
+function getColumnNamesAndTypes(tableName: string): { name: string, type: string }[] {
+  if (!database) {
+    throw new Error('Database not initialized');
+  }
+
+  const stmt = database.prepare(`PRAGMA table_info(${tableName})`);
+  const rows = stmt.all();
+  const columns = rows.map((row: any) => ({ name: row.name, type: row.type }));
+  console.log(tableName, " columns: ")
+  console.log(columns)
+  return columns;
 }
