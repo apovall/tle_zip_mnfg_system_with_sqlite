@@ -83,7 +83,7 @@ function UnitScanning({
         </p>
       </div>
 
-      <div className="">
+      <div className="w-1/2 mx-auto">
         <QRCodeBatchInput
           label="Scan or enter serial (enter to submit)"
           setQRString={setQRCode}
