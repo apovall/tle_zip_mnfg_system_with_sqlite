@@ -1,16 +1,21 @@
-import { useContext } from 'react'
+import { useContext } from "react";
 import { SystemContext } from "../../context/SystemContext";
 
-function CancelJobGeneric({ text }: {text:string}) {
-
+function CancelJobGeneric({
+  text,
+  marginOverride = "mt-20",
+}: {
+  text: string;
+  marginOverride?: string;
+}) {
   const { setActiveJob, setPageNumber } = useContext(SystemContext);
 
   return (
     <button
-      className="self-start mt-40 mx-8 text-white text-lg  rounded-2xl py-2 px-8 bg-cancel hover:scale-105 transition-transform"
+      className={`${marginOverride} self-start mt-40 mx-8 text-white text-lg  rounded-2xl py-2 px-8 bg-cancel hover:scale-105 transition-transform`}
       onClick={() => {
-        setPageNumber(0)
-        setActiveJob("select")
+        setPageNumber(0);
+        setActiveJob("select");
       }}
     >
       {text}
@@ -18,4 +23,4 @@ function CancelJobGeneric({ text }: {text:string}) {
   );
 }
 
-export default CancelJobGeneric
+export default CancelJobGeneric;

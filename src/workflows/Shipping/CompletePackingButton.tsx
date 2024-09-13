@@ -1,13 +1,15 @@
+import React from 'react'
+
 import { useContext, useRef } from "react";
 import { SystemContext } from "../../context/SystemContext";
 
-interface CompleteAssemblyButtonProps {
+interface CompletePackingButtonProps {
   text: string;
   isDisabled: boolean;
   saveResults: React.MouseEventHandler<HTMLButtonElement>;
 }
 
-function CompleteAssemblyButton({ text, isDisabled,  saveResults }: CompleteAssemblyButtonProps) {
+function CompletePackingButton({ text, isDisabled, saveResults }: CompletePackingButtonProps) {
   // const { pageNumber, setPageNumber } = useContext(SystemContext);
   const styling = isDisabled ? "bg-disabled" : "bg-gradient-to-r from-zip-light to-zip-dark hover:scale-105"
 
@@ -22,4 +24,4 @@ function CompleteAssemblyButton({ text, isDisabled,  saveResults }: CompleteAsse
   );
 }
 
-export default CompleteAssemblyButton;
+export default CompletePackingButton;

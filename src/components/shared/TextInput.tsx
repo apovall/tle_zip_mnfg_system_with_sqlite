@@ -30,7 +30,7 @@ function TextInput({
             }
           }}
           onChange={(e) => {
-            setInputValues((prev) => {
+            setInputValues((prev: {[key:string] : any }) => {
               return { ...prev, [target]: e.target.value };
             });
           }}

@@ -9,6 +9,7 @@ interface QRReaderProps {
   submitOverride?: boolean;
   setReadComplete?: Dispatch<SetStateAction<boolean>>;
   focus?: React.RefObject<HTMLInputElement>;
+  autoFocus?: boolean;
 }
 
 function QRCodeBatchInput({
@@ -18,18 +19,19 @@ function QRCodeBatchInput({
   value,
   submitOverride = false,
   setReadComplete,
-  focus
+  focus,
+  autoFocus=true
 }: QRReaderProps) {
   const { pageNumber, setPageNumber } = useContext(SystemContext);
 
   return (
-    <div className="w-1/2 text-right mx-auto my-4 self-center">
+    <div className="text-right mx-auto my-4 self-center">
       <div className="flex flex-row justify-center">
         <h3 className="basis-1/3 text-lg mx-4 self-center font-bold ">
           {label}
         </h3>
         <input
-          autoFocus
+          autoFocus={autoFocus}
           id={target}
           type={target == "resistorLoaded" ? "number" : "text"}
           className="basis-2/3 border-2 border-zip-dark rounded-lg p-4 self-center"
@@ -44,10 +46,11 @@ function QRCodeBatchInput({
               );
               // setPageNumber(pageNumber + 1)
             } else if (e.key == "Enter" && value && submitOverride == true) {
-              console.log("in here, read complete");
               if (setReadComplete !== undefined) {
+                console.log("in here, read complete");
                 setReadComplete(true);
               }
+              await new Promise((resolve) => setTimeout(() => {setQRString(null)}, 200));
               setQRString(null);
             }
           }}

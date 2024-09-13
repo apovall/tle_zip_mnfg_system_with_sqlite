@@ -33,7 +33,7 @@ interface QRCode {
 
 export interface TextInputProps {
   label: string;
-  setInputValues:  Dispatch<SetStateAction<UnitDetails>>;
+  setInputValues: Dispatch<SetStateAction<any>>;
   target: string;
   value: string | null;
   autoFocus?: boolean;
@@ -51,8 +51,8 @@ export interface TestParameters {
 }
 
 export interface SystemContextProps {
-  activeJob: "select" | "test" | "assemble" | "resistor_check" | "6-pack" | "shipping";
-  setActiveJob: Dispatch<SetStateAction<"select" | "test" | "assemble" | "resistor_check" | "6-pack" | "shipping">>
+  activeJob: "select" | "test" | "assemble" | "resistor_check" | "box_packing" | "box_shipping";
+  setActiveJob: Dispatch<SetStateAction<"select" | "test" | "assemble" | "resistor_check" | "box_packing" | "box_shipping">>
   pageNumber: number;
   setPageNumber: Dispatch<SetStateAction<number>>;
   isConnected: boolean;

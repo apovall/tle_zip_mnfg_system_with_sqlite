@@ -28,25 +28,17 @@ function UnitScanning({
   */
 
   const [qrCode, setQRCode] = useState<string | null>("");
+
   const handleBatchCodes = (qrCode: string) => {
     let type = qrCode[0].toLowerCase();
-    // Process it
-    // Clear input
     if (type == "a" || type == "b") {
-      setBatchCodes({
-        ...batchCodes,
-        dispenserSerial: qrCode,
+      setBatchCodes((prev) => {
+        return {...prev, dispenserSerial: qrCode,}
       });
     } else {
-      setBatchCodes({
-        ...batchCodes,
-        pcbSerial: qrCode,
+      setBatchCodes((prev) => {
+        return {...prev, pcbSerial: qrCode,}
       });
-    }
-
-    // Detect carriage return or line feed character
-    if (qrCode.includes("\n") || qrCode.includes("\r")) {
-      console.log("found return");
     }
   };
 

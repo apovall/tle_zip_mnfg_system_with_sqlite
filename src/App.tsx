@@ -3,6 +3,7 @@ import { SystemContext } from "./context/SystemContext";
 import JobSelectorWrapper from "./workflows/jobSelector/JobSelectorWrapper";
 import TestingWrapper from "./workflows/UnitTesting/TestingWrapper";
 import AssemblyWrapper from "./workflows/UnitAssembly/AssemblyWrapper";
+import BoxPackingWrapper from "./workflows/Shipping/BoxPackingWrapper";
 
 import "./App.css";
 
@@ -32,6 +33,16 @@ function App() {
       )
       break;
     case "resistor_check":
+      componentBlock = (
+        <TestingWrapper />
+      )
+      break;
+    case "box_packing":
+      componentBlock = (
+        <BoxPackingWrapper />
+      )
+      break;
+    case "box_shipping":
       componentBlock = (
         <TestingWrapper />
       )

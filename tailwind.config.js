@@ -12,6 +12,7 @@ export default {
       "cancel": "#C34A4A",
       "disabled": "#D9D9D9",
       "main": "#3D3D3D",
+      "medium-gray": "#AFAFAF",
       "orange": "#FFC700",
       "lime": "#E9EC49",
       "acceptable-green": "#35B942"

@@ -36,6 +36,7 @@ function AssemblyWrapper() {
     dispenserSerial: null,
   });
 
+  // How many times has the serial been scanned 
   const [readQuantities, setReadQuantities] = useState<{
     pcbSerial: number | null;
     dispenserSerial: number | null;
@@ -89,7 +90,6 @@ function AssemblyWrapper() {
       dispenserSerial: null,
     })
 
-    console.log('refocusing')
     focus.current?.focus()
   }
   

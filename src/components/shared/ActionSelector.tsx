@@ -6,7 +6,7 @@ function ActionSelector({
   text,
   disabled = false,
 }: {
-  type: "test" | "assemble" | "resistor_check" | "6-pack" | "shipping";
+  type: "test" | "assemble" | "resistor_check" | "box_packing" | "box_shipping";
   text: string;
   disabled?: boolean;
 }) {
@@ -29,29 +29,19 @@ function ActionSelector({
           case 'test':
             systemContext.setPageNumber(0)
             break;
-          case 'assemble':
-            systemContext.setPageNumber(4)
-          break;
           case 'resistor_check':
             systemContext.setPageNumber(3)
           break;
+          case 'assemble':
+            systemContext.setPageNumber(4)
+          break;
+          case 'box_packing':
+            systemContext.setPageNumber(5)
+          break;
           default:
             return
-            break;
         }
         systemContext.setActiveJob(type)
-        // if (type=='test'){
-          //   systemContext.setPageNumber(0)
-          //   systemContext.setActiveJob(type)
-          // }
-          // if (type=='resistor_check'){
-            //   systemContext.setPageNumber(3)
-            //   systemContext.setActiveJob(type)
-            // }
-            // if (type=='resistor_check'){
-              //   systemContext.setPageNumber(3)
-              // systemContext.setActiveJob(type)
-        // }
       }}
     >
       <h1 className={`${fontSize} self-center text-white text-center mx-4`}>{text}</h1>
