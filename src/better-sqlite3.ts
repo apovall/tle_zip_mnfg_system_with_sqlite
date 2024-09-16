@@ -200,7 +200,6 @@ function updateTableSchema(tableName:string, newColumn:{name:string, type:string
     } 
     if (column.name == newColumn.name){
       columnExists = true
-      console.log("Column already exists")
       return
     }
   })
@@ -226,7 +225,5 @@ function getColumnNamesAndTypes(tableName: string): { name: string, type: string
   const stmt = database.prepare(`PRAGMA table_info(${tableName})`);
   const rows = stmt.all();
   const columns = rows.map((row: any) => ({ name: row.name, type: row.type }));
-  console.log(tableName, " columns: ")
-  console.log(columns)
   return columns;
 }

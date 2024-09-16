@@ -33,7 +33,6 @@ function BoxPackingWrapper() {
   const handleSave = () => {
     // Save to database
     // Clear dispenser Details for next iteration.
-    console.log(jobDetails)
     saveDispenserPackDetails({
       ...jobDetails,
       dispenserDetails: JSON.stringify(dispenserDetails),
@@ -48,12 +47,6 @@ function BoxPackingWrapper() {
     focusButton.current?.focus() // Refocus on input field for ease of use
 
   }
-
-  useEffect(() => {
-    console.log('here')
-    console.log(jobDetails)
-    console.log(dispenserDetails)
-  },[jobDetails, dispenserDetails])
 
   switch (pageNumber) {
     case 5:

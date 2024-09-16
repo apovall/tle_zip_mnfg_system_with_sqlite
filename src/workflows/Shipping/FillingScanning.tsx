@@ -25,7 +25,6 @@ function FillingScanning({
     let newFillingDetails = [...fillingDetails];
     newFillingDetails.splice(index, 1)
     setFillingDetails(newFillingDetails);
-    console.log(newFillingDetails)
   };
 
   useEffect(() => {
