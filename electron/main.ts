@@ -41,11 +41,13 @@ ipcMain.on('upload-file', (event, config) => {
   const shortPath = process.env.NODE_ENV.slice(0, 4)
 
   const fileStream = fs.createReadStream(dbPath);
-  const date = new Date().toLocaleString('en-CA', 
-    { year: 'numeric',
-      month: '2-digit',
-      day: '2-digit'})
-    .split(", ")[0].replaceAll("-", "_")
+  // const date = new Date().toLocaleString('en-CA', 
+  //   { year: 'numeric',
+  //     month: '2-digit',
+  //     day: '2-digit'})
+  //   .split(", ")[0].replaceAll("-", "_")
+
+  const date = new Date().toISOString().replace('T', ' ').substring(0, 16).replace(/-/g, "_").replace(":", "_").replace(" ", "T")
   
   const params = {
     Bucket: config.bucket,
