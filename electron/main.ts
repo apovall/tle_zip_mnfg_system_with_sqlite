@@ -53,8 +53,6 @@ ipcMain.on('upload-file', (event, config) => {
     Body: fileStream,
   };
 
-  console.log(params)
-
   s3.upload(params, (err:any, data:any) => {
     if (err) {
       console.error('Error uploading file: ', err);
