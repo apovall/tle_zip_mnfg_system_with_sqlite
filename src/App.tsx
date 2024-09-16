@@ -4,6 +4,7 @@ import JobSelectorWrapper from "./workflows/jobSelector/JobSelectorWrapper";
 import TestingWrapper from "./workflows/UnitTesting/TestingWrapper";
 import AssemblyWrapper from "./workflows/UnitAssembly/AssemblyWrapper";
 import BoxPackingWrapper from "./workflows/Shipping/BoxPackingWrapper";
+import S3FileUpload from "./helpers/S3FileUpload";
 
 import "./App.css";
 
@@ -54,35 +55,13 @@ function App() {
 
   return (
     <div className="w-full">
-      {/* <img src="/images/zip_banner.png" alt="ZIP Banner" /> */}
       <div className="">
-        <img className="absolute top-0" src={`${process.env.NODE_ENV === 'production' ? './images/zip_banner.png' : '/images/zip_banner.png'}`} alt="ZIP Banner" />
+        <div className="absolute top-0">
+          <img className="" src={`${process.env.NODE_ENV === 'production' ? './images/zip_banner.png' : '/images/zip_banner.png'}`} alt="ZIP Banner" />
+          {systemContext.activeJob == "select" && <S3FileUpload />}
+        </div>
+        
         {componentBlock}
-        {/* {systemContext.activeJob == "select" ? (
-          <>
-            <h1 className="text-center text-3xl my-16 pt-[120px]">
-              What would you like to do?
-            </h1>
-            <JobSelectorWrapper />
-          </>
-        ) : (
-          <></>
-        )}
-        {systemContext.activeJob == "test" ? (
-          <TestingWrapper />
-        ) : (
-          <></>
-        )}
-        {systemContext.activeJob == "assemble" ? (
-          <AssemblyWrapper />
-        ) : (
-          <></>
-        )}
-        {systemContext.activeJob == "resistor_check" ? (
-          <TestingWrapper />
-        ) : (
-          <></>
-        )} */}
       </div>
     </div>
   );

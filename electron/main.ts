@@ -1,16 +1,12 @@
 import path from "path";
 import { app, BrowserWindow, ipcMain } from "electron";
+const AWS = require('aws-sdk');
+import fs from "fs";
 
-process.env["ELECTRON_DISABLE_SECURITY_WARNINGS"] = "true";
-// The built directory structure
-//
-// ├─┬ dist
-// │ ├─┬ electron
-// │ │ ├── main.js
-// │ │ └── preload.js
-// │ ├── index.html
-// │ ├── ...other-static-files-from-public
-// │
+import dotenv from 'dotenv';
+dotenv.config({ path: path.resolve(__dirname, '.env') });
+
+process.env["ELECTRON_DISABLE_SECURITY_WARNINGS"] = "true"; //TODO: Check this
 process.env.DIST = path.join(__dirname, "../dist");
 process.env.NODE_ENV = app.isPackaged 
   ? "production"
@@ -28,6 +24,47 @@ if (!app.requestSingleInstanceLock()) {
 ipcMain.handle("get-database-path", () =>
   path.join(app.getPath("userData"), "better-sqlite3.sqlite3")
 );
+
+// Listen for file upload request from renderer process
+ipcMain.on('upload-file', (event, config) => {
+  
+  AWS.config.update(config)
+  console.log('config', config)
+
+  console.log(import.meta.env.VITE_AWS_ACCESS_KEY,)
+  console.log(import.meta.env.VITE_AWS_SECRET,)
+  console.log(import.meta.env.VITE_AWS_S3_BUCKET_NAME,)
+  
+  const s3 = new AWS.S3();
+  const dbPath = path.join(app.getPath("userData"), "better-sqlite3.sqlite3")
+  
+  const shortPath = process.env.NODE_ENV.slice(0, 4)
+
+  const fileStream = fs.createReadStream(dbPath);
+  const date = new Date().toLocaleString('en-CA', 
+    { year: 'numeric',
+      month: '2-digit',
+      day: '2-digit'})
+    .split(", ")[0].replaceAll("-", "_")
+  
+  const params = {
+    Bucket: config.bucket,
+    Key: `h2-test-system/${shortPath}/${date}_${dbPath.split('/').pop()}`,  // File name in S3
+    Body: fileStream,
+  };
+
+  console.log(params)
+
+  s3.upload(params, (err:any, data:any) => {
+    if (err) {
+      console.error('Error uploading file: ', err);
+      event.reply('upload-error', err);
+    } else {
+      console.log('Successfully uploaded file:', data);
+      event.reply('upload-success', data.Location);  // Return S3 file URL
+    }
+  });
+});
 
 let win: BrowserWindow | null;
 
@@ -116,6 +153,8 @@ function createWindow() {
     // win.loadFile(path.join(process.env.DIST, "index.html"));
   }
 }
+
+
 
 app.on("window-all-closed", () => {
   app.quit();

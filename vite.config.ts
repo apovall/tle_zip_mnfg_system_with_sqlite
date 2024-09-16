@@ -73,12 +73,21 @@ function bindingSqlite3(options: {
 
       fs.copyFileSync(better_sqlite3_node, better_sqlite3_copy)
 
+      // Read the content of the .env.dev file
+      let envDevContent = ''
+      const envDevPath = path.join(resolvedRoot, '.env.aws')
+      if (fs.existsSync(envDevPath)) {
+        envDevContent = fs.readFileSync(envDevPath, 'utf-8')
+      }
+
+      
       const BETTER_SQLITE3_BINDING = better_sqlite3_copy.replace(`${resolvedRoot}${path.sep}`, '')
       fs.writeFileSync(
         path.join(resolvedRoot, '.env'),
-        `VITE_BETTER_SQLITE3_BINDING=${BETTER_SQLITE3_BINDING}
-          VITE_COMMAND=${options.command}
-          VITE_DEV_ROOT=${resolvedRoot}`.trim(),
+`${envDevContent}
+VITE_BETTER_SQLITE3_BINDING=${BETTER_SQLITE3_BINDING}
+VITE_COMMAND=${options.command}
+VITE_DEV_ROOT=${resolvedRoot}`.trim(),
       )
       console.log(TAG, `binding to ${BETTER_SQLITE3_BINDING}`)
     },
