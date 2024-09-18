@@ -25,6 +25,9 @@ function ActionSelector({
         `}
       onClick={() => {
         // Temporarily disabled
+        if (disabled) {
+          return;
+        }
         switch (type) {
           case 'test':
             systemContext.setPageNumber(0)

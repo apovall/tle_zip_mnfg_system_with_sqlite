@@ -40,8 +40,8 @@ const tableSchema = {
       timestamp TEXT
     );
   `,
-  "zip_pack_box": `
-    CREATE TABLE IF NOT EXISTS zip_pack_box (
+  "zip_dispener_filling": `
+    CREATE TABLE IF NOT EXISTS zip_dispener_filling (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       pack_serial TEXT,
       pack_size INTEGER,
@@ -72,7 +72,7 @@ export function getSqlite3(filename: string) {
   })
   createTable(tableSchema['zip_h2_manufacturing_test'])
   createTable(tableSchema['zip_h2_assembly'])
-  createTable(tableSchema['zip_pack_box'])
+  // createTable(tableSchema['zip_dispener_filling'])
 
   // Check if necessary to add new column to the table specified
   // Doing it this way allows the app to always be kept up to date programatically 
@@ -83,8 +83,8 @@ export function getSqlite3(filename: string) {
   console.log("zip_h2_manufacturing_test table: \n", rows)
   rows = readTable('zip_h2_assembly')
   console.log("zip_h2_assembly table: \n", rows)
-  rows = readTable('zip_pack_box')
-  console.log("zip_pack_box table: \n", rows)
+  // rows = readTable('zip_dispener_filling')
+  // console.log("zip_dispener_filling table: \n", rows)
   return database
 }
 // From tableSchema object
@@ -168,7 +168,7 @@ export function saveAssemblyResults(data:any){
 
 export function saveDispenserPackDetails(data:any){
   const stmt = database.prepare(`
-    INSERT INTO zip_pack_box (
+    INSERT INTO zip_dispener_filling (
       pack_serial,
       pack_size,
       dispenser_details,

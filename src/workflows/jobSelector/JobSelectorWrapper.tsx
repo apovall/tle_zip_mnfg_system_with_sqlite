@@ -10,7 +10,7 @@ function JobSelectorWrapper() {
         <ActionSelector type="assemble" text='Assemble Units'/>
       </div>
       <div className="flex flex-col flex-nowrap justify-between">
-        <ActionSelector type="fill_dispeners" text='Fill Dispensers'/>
+        <ActionSelector type="fill_dispeners" text='Fill Dispensers' disabled/>
         <ActionSelector type="box_shipping" text='Ship Boxes' disabled/>
       </div>
     </div>
