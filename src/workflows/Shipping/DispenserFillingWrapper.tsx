@@ -14,7 +14,7 @@ interface JobDetailProps {
   packSerial: string;
 }
 
-function BoxPackingWrapper() {
+function DispenserFillingWrapper() {
   let componentBlock;
   const { pageNumber, setPageNumber } = useContext(SystemContext);
   const focusButton = useRef<HTMLInputElement>(null)
@@ -54,7 +54,7 @@ function BoxPackingWrapper() {
         <>
           <div className="h-[650px]">
             <TextInput
-              label="Pack Box Number"
+              label="Job Number"
               setInputValues={setJobDetails}
               target="packSerial"
               value={jobDetails["packSerial"]}
@@ -122,4 +122,4 @@ function BoxPackingWrapper() {
   );
 }
 
-export default BoxPackingWrapper;
+export default DispenserFillingWrapper;

@@ -3,7 +3,7 @@ import { SystemContext } from "./context/SystemContext";
 import JobSelectorWrapper from "./workflows/jobSelector/JobSelectorWrapper";
 import TestingWrapper from "./workflows/UnitTesting/TestingWrapper";
 import AssemblyWrapper from "./workflows/UnitAssembly/AssemblyWrapper";
-import BoxPackingWrapper from "./workflows/Shipping/BoxPackingWrapper";
+import DispenserFillingWrapper from "./workflows/Shipping/DispenserFillingWrapper";
 import S3FileUpload from "./helpers/S3FileUpload";
 
 import "./App.css";
@@ -38,9 +38,9 @@ function App() {
         <TestingWrapper />
       )
       break;
-    case "box_packing":
+    case "fill_dispeners":
       componentBlock = (
-        <BoxPackingWrapper />
+        <DispenserFillingWrapper />
       )
       break;
     case "box_shipping":

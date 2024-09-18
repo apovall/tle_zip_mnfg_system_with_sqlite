@@ -23,7 +23,7 @@ export const SystemContextProvider:FC<SystemProviderProps> = ({children}) => {
     | "test" 
     | "assemble" 
     | "resistor_check" 
-    | "box_packing" 
+    | "fill_dispeners" 
     | "box_shipping">("select")
   const [isConnected, setIsConnected] = useState(false)
 
