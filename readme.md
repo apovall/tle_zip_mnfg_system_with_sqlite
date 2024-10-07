@@ -21,7 +21,7 @@ System was developed on Mac ARM64
   - A fresh install of Ubuntu has most of what's needed.
   - If not, then install:
     - nvm
-    - node 22.1 via nvm
+    - node 22.1 using nvm
     - npm
     - You will need to install a new copy of python setuptools `python -m pip install setuptools` in order to natively build better-sqlite3
 - You will need to add your user (`zip`) to the `dialout` group in order to access serial comms

@@ -78,9 +78,9 @@ function UnitScanning({
           iconName={iconLookup(readQuantities.dispenserSerial, "dispenser")}
           timesUsed={readQuantities.dispenserSerial}
         />
-        <p className={`text-main py-8 ${readQuantities.dispenserSerial !== null && readQuantities.dispenserSerial <= 3 ? "opacity-100" : "opacity-0"}`}>
+        {/* <p className={`text-main py-8 ${readQuantities.dispenserSerial !== null && readQuantities.dispenserSerial <= 3 ? "opacity-100" : "opacity-0"}`}>
           Remember: record number of refills on dispenser body
-        </p>
+        </p> */}
       </div>
 
       <div className="w-1/2 mx-auto">
