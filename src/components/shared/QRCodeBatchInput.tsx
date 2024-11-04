@@ -10,6 +10,7 @@ interface QRReaderProps {
   setReadComplete?: Dispatch<SetStateAction<boolean>>;
   focus?: React.RefObject<HTMLInputElement>;
   autoFocus?: boolean;
+  resetQRString?: boolean;
 }
 
 function QRCodeBatchInput({
@@ -20,7 +21,8 @@ function QRCodeBatchInput({
   submitOverride = false,
   setReadComplete,
   focus,
-  autoFocus=true
+  autoFocus=true,
+  resetQRString=true
 }: QRReaderProps) {
   const { pageNumber, setPageNumber } = useContext(SystemContext);
 
@@ -50,8 +52,10 @@ function QRCodeBatchInput({
                 console.log("in here, read complete");
                 setReadComplete(true);
               }
-              await new Promise((resolve) => setTimeout(() => {setQRString(null)}, 200));
-              setQRString(null);
+              if (resetQRString) {
+                await new Promise((resolve) => setTimeout(() => {setQRString(null)}, 200));
+                setQRString(null);
+              }
             }
           }}
           onChange={(e) => {

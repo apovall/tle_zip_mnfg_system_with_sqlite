@@ -40,12 +40,13 @@ const tableSchema = {
       timestamp TEXT
     );
   `,
-  "zip_dispener_filling": `
-    CREATE TABLE IF NOT EXISTS zip_dispener_filling (
+  "zip_dispenser_filling": `
+    CREATE TABLE IF NOT EXISTS zip_dispenser_filling (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
-      pack_serial TEXT,
-      pack_size INTEGER,
-      dispenser_details TEXT,
+      job_number TEXT,
+      dispenser_serial TEXT,
+      filling_serials TEXT,
+      times_filled INTEGER,
       timestamp TEXT
     );
   `
@@ -72,7 +73,7 @@ export function getSqlite3(filename: string) {
   })
   createTable(tableSchema['zip_h2_manufacturing_test'])
   createTable(tableSchema['zip_h2_assembly'])
-  // createTable(tableSchema['zip_dispener_filling'])
+  createTable(tableSchema['zip_dispenser_filling'])
 
   // Check if necessary to add new column to the table specified
   // Doing it this way allows the app to always be kept up to date programatically 
@@ -83,8 +84,8 @@ export function getSqlite3(filename: string) {
   console.log("zip_h2_manufacturing_test table: \n", rows)
   rows = readTable('zip_h2_assembly')
   console.log("zip_h2_assembly table: \n", rows)
-  // rows = readTable('zip_dispener_filling')
-  // console.log("zip_dispener_filling table: \n", rows)
+  // rows = readTable('saveDispenserFillingDetails')
+  // console.log("saveDispenserFillingDetails table: \n", rows)
   return database
 }
 // From tableSchema object
@@ -104,7 +105,7 @@ export function readTable(tableName:string, clause?:string) {
   return rows;
 }
 
-export function saveUnitResults(data:UnitDetails){
+export function saveUnitResults(data:UnitDetails) {
   const stmt = database.prepare(`
     INSERT INTO zip_h2_manufacturing_test (
       batchNumber,
@@ -144,7 +145,7 @@ export function saveUnitResults(data:UnitDetails){
   console.log("zip_h2_manufacturing_test saving ==>", result)
 }
 
-export function saveAssemblyResults(data:any){
+export function saveAssemblyResults(data:any) {
   const stmt = database.prepare(`
     INSERT INTO zip_h2_assembly (
       batch_number,
@@ -166,31 +167,9 @@ export function saveAssemblyResults(data:any){
   console.log("zip_h2_assembly saving ==>", result)
 }
 
-export function saveDispenserPackDetails(data:any){
-  const stmt = database.prepare(`
-    INSERT INTO zip_dispener_filling (
-      pack_serial,
-      pack_size,
-      dispenser_details,
-      timestamp
-    ) VALUES (?, ?, ?, ?)
-  `);
-
-  const timestamp = new Date().toLocaleString('en-NZ', { timeZone: 'Pacific/Auckland', hour12: false });
-  let result = stmt.run(
-    data.packSerial,
-    data.packSize,
-    data.dispenserDetails,
-    timestamp
-  );
-
-  console.log("zip_pack_box saving ==>", result);
-
-}
-
 // Used for adding new table columns to a specific table, after the tables have already
 // been created.
-function updateTableSchema(tableName:string, newColumn:{name:string, type:string}){
+function updateTableSchema(tableName:string, newColumn:{name:string, type:string}) {
   const columns = getColumnNamesAndTypes(tableName);
   let columnExists = false
 
@@ -209,10 +188,9 @@ function updateTableSchema(tableName:string, newColumn:{name:string, type:string
   } else {
     addColumnToTable(tableName, newColumn.name, newColumn.type)
   }
-
 }
 
-function addColumnToTable(tableName:string, columnName:string, columnType:string){
+function addColumnToTable(tableName:string, columnName:string, columnType:string) {
   const stmt = database.prepare(`ALTER TABLE ${tableName} ADD COLUMN ${columnName} ${columnType}`);
   stmt.run();
 }
@@ -226,4 +204,72 @@ function getColumnNamesAndTypes(tableName: string): { name: string, type: string
   const rows = stmt.all();
   const columns = rows.map((row: any) => ({ name: row.name, type: row.type }));
   return columns;
+}
+
+
+interface DispenserResultsDetails {
+  jobNumber: string,
+  dispenser_serial: string,
+  filling_serials: string[] | null,
+  times_filled: number | null,
+  timestamp: string | null
+}
+
+type DispenserResults = DispenserResultsDetails | Error;
+
+export function readDispenserFillingDetails(jobNumber: string, dispenserSerial: string, ): DispenserResults {
+  const query = `SELECT * FROM zip_dispenser_filling WHERE dispenser_serial = ? ORDER BY times_filled DESC LIMIT 1`;
+  const selectStatement = database.prepare(query);
+  let rows = selectStatement.all(dispenserSerial);
+  console.log('here', rows)
+  if (rows.length != 0) {
+    return rows[0] as DispenserResults;
+  }
+  return {
+    jobNumber: jobNumber,
+    dispenser_serial: dispenserSerial,
+    filling_serials: null,
+    times_filled: 0,
+    timestamp: null
+  }
+
+  // const stmt = database.prepare(`
+  //   INSERT INTO zip_dispenser_filling (
+  //     job_number,
+  //     dispenser_serial,
+  //     times_filled
+  //   ) VALUES (?, ?, ?)`)
+  // try {
+  //   const result = stmt.run(
+  //     jobNumber,
+  //     dispenserSerial, 
+  //     0
+  //   );
+  //   console.log("zip_dispenser_filling saving ==>", result);
+  //   return {
+  //     jobNumber: jobNumber,
+  //     dispenser_serial: dispenserSerial,
+  //     filling_serials: null,
+  //     times_filled: 0,
+  //     timestamp: null
+  //   }
+  // } catch (error) {
+  //   console.error("Error inserting into zip_dispenser_filling:", error);
+  //   return error as Error
+  // }
+}
+
+export function createDispenserFillingEntry(jobNumber: string, dispenserSerial: string, timesFilled: number): void {
+  const stmt = database.prepare(`
+    INSERT INTO zip_dispenser_filling (
+      job_number,
+      dispenser_serial,
+      times_filled
+    ) VALUES (?, ?, ?)`);
+  const result = stmt.run(
+    jobNumber,
+    dispenserSerial,
+    timesFilled
+  );
+  console.log("zip_dispenser_filling saving ==>", result);
 }

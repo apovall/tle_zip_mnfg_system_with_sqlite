@@ -89,3 +89,7 @@ export interface BatchCodesProps {
   pcbSerial: string | null,
   dispenserSerial: string | null,
 }
+
+export interface FillingJobDetails {
+  jobNumber: string;
+}

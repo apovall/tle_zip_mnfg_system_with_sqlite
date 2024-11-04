@@ -15,10 +15,16 @@ export default {
       "medium-gray": "#AFAFAF",
       "orange": "#FFC700",
       "lime": "#E9EC49",
-      "acceptable-green": "#35B942"
+      "acceptable-green": "#35B942",
+      "black": "#000000",
 
     },
-    extend: {},
+    extend: {
+      fontFamily: {
+        jost: ["Jost"], 
+        roboto: ["Roboto"], 
+      }
+    },
   },
   plugins: [],
 }

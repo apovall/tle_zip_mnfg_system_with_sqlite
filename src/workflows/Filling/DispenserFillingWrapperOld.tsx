@@ -2,11 +2,11 @@ import { useState, useContext, useEffect, useRef } from "react";
 import { SystemContext } from "../../context/SystemContext";
 import NextButton from "../../components/shared/NextButton";
 import CancelJobGeneric from "../../components/shared/CancelJobGeneric";
-import PackScanning from "./PackScanning";
+import PackScanning from "../Shipping/PackScanning";
 import BackButton from "../../components/shared/BackButton";
-import FillingScanning from "./FillingScanning";
+import FillingScanning from "../Shipping/FillingScanning";
 import TextInput from "../../components/shared/TextInput";
-import CompletePackingButton from "./CompletePackingButton";
+import CompletePackingButton from "../Shipping/CompletePackingButton";
 import { saveDispenserPackDetails } from "../../better-sqlite3";
 
 interface JobDetailProps {
@@ -52,7 +52,7 @@ function DispenserFillingWrapper() {
     case 5:
       componentBlock = (
         <>
-          <div className="h-[650px]">
+          <div className="h-[650px] flex flex-col justify-center">
             <TextInput
               label="Job Number"
               setInputValues={setJobDetails}

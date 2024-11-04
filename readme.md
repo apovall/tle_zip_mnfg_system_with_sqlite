@@ -43,3 +43,12 @@ System was developed on Mac ARM64
 ### serial port permissions on Ubuntu
 If you can't read serial comms when the tester is plugged in, it's most likely being denied access by the system itself.
 - Ensure the port and user are added to the correct dailout group
+
+
+## Changes
+- Packsize is removed from dispenser refilling
+- Packserial is renamed to jobNumber
+- When assembling units - check whether the dispenser value is still being incremented or not. It should now be:
+ - Not incremted by the assembly worklow
+ - It should be incremented by the filling workflow
+ - Need to ensure that all tables that are affected by this change are updated
