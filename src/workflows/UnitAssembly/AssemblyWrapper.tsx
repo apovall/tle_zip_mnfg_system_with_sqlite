@@ -1,6 +1,7 @@
 import { useState, useContext, useEffect, useRef } from "react";
 import { SystemContext } from "../../context/SystemContext";
 import { readTable } from "../../better-sqlite3";
+import { unitCanBeAssembled } from "../../controller/test_and_assembly"; 
 
 import { AssemblyJobDetails } from "../../types/interfaces";
 
@@ -30,6 +31,7 @@ function AssemblyWrapper() {
   let componentBlock;
   const [ batchNumber, setBatchNumber ] = useState<string | null>("");
   const [ readComplete, setReadComplete ] = useState<boolean>(false);
+  const [ canBeAssembled, setCanBeAssembled ] = useState<[boolean | null, string]>([null, ""]);
 
   const [batchCodes, setBatchCodes] = useState<BatchCodesProps>({
     pcbSerial: null,
@@ -52,6 +54,9 @@ function AssemblyWrapper() {
     if (readQuantities.dispenserSerial >= 4) {
       return true;
     }
+    if (!canBeAssembled[0]){
+      return true
+    }
     return false;
   }
 
@@ -59,6 +64,15 @@ function AssemblyWrapper() {
     let clause = `WHERE ${type} = '${serialNumber}'`;
     let rows = readTable("zip_h2_assembly", clause); // read entire table
     let lookupKey = type.replace("_serial", "Serial"); // aligning naming conventions to keep things DRYer
+
+    if (type == "pcb_serial") {
+      const testResult = unitCanBeAssembled(serialNumber)
+      if (testResult[0]){
+        setCanBeAssembled([true, ""]);
+      } else {
+        setCanBeAssembled([false, testResult[1]]);
+      }
+    }
 
     setReadQuantities((prev) => {
       return { ...prev, [lookupKey]: rows.length };
@@ -97,12 +111,14 @@ function AssemblyWrapper() {
     case 4:
       componentBlock = (
         <>
+        <div className="w-1/2 mx-auto">
           <QRCodeBatchInput
             label="Assembly Batch Number"
             setQRString={setBatchNumber}
             target="qrCode"
             value={batchNumber}
           />
+        </div>
           <NextButton
             text="Next"
             isDisabled={batchNumber == null || batchNumber.length < 1}
@@ -118,6 +134,7 @@ function AssemblyWrapper() {
             batchCodes={batchCodes}
             setBatchCodes={setBatchCodes}
             setReadComplete={setReadComplete}
+            canBeAssembled={canBeAssembled}
             readQuantities={readQuantities}
             focus={focus}
           />
@@ -137,7 +154,6 @@ function AssemblyWrapper() {
   }
 
   useEffect(() => {
-    // If read is complete, then do look up in database
     if (readComplete) {
       if (batchCodes.dispenserSerial) {
         lookupSerialNumber("dispenser_serial", batchCodes.dispenserSerial);
@@ -147,14 +163,10 @@ function AssemblyWrapper() {
       }
       // lookupSerialNumber(batchCodes.pcbSerial, "pcb_serial")
     }
-  }, [batchCodes, readComplete]);
-
-  useEffect(() => {
-    console.log(readQuantities);
-  }, [readQuantities]);
+  }, [readComplete]);
 
   return (
-    <div className="w-full h-screen flex flex-col justify-center">
+    <div className="w-full h-screen flex flex-col justify-end">
       {componentBlock}
     </div>
   );

@@ -3,6 +3,18 @@ import path from 'node:path'
 import Database from 'better-sqlite3'
 import { UnitDetails } from './types/interfaces'
 
+interface DispenserResultsDetails {
+  jobNumber: string,
+  dispenser_serial: string,
+  filling_serials: string[] | null,
+  times_filled: number | null,
+  timestamp: string | null
+}
+
+type DispenserResults = DispenserResultsDetails | Error;
+// type UnitDetailResults = UnitDetails | Error
+
+
 const root = import.meta.env.VITE_COMMAND === 'serve'
   ? import.meta.env.VITE_DEV_ROOT
   : path.join(__dirname, '..')
@@ -206,16 +218,20 @@ function getColumnNamesAndTypes(tableName: string): { name: string, type: string
   return columns;
 }
 
+export function getSinglePCBTestDate(pcbSerial: string): string | null{
 
-interface DispenserResultsDetails {
-  jobNumber: string,
-  dispenser_serial: string,
-  filling_serials: string[] | null,
-  times_filled: number | null,
-  timestamp: string | null
+  const query = `SELECT * FROM zip_h2_manufacturing_test WHERE qrCode = ? ORDER BY timestamp DESC LIMIT 1`;
+  const selectStatement = database.prepare(query);
+  const rows = selectStatement.all(pcbSerial);
+  if (rows.length == 0) {
+    return null
+  }
+  
+  const result = rows[0] as UnitDetails & { timestamp: string }; // timestamp is saved separetely when data is written to the db
+
+  return result.timestamp
+
 }
-
-type DispenserResults = DispenserResultsDetails | Error;
 
 export function readDispenserFillingDetails(jobNumber: string, dispenserSerial: string, ): DispenserResults {
   const query = `SELECT * FROM zip_dispenser_filling WHERE dispenser_serial = ? ORDER BY times_filled DESC LIMIT 1`;

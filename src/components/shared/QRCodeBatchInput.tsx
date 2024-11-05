@@ -27,8 +27,8 @@ function QRCodeBatchInput({
   const { pageNumber, setPageNumber } = useContext(SystemContext);
 
   return (
-    <div className="text-right mx-auto my-4 self-center">
-      <div className="flex flex-row justify-center">
+    <div className="text-right my-4 self-center w-full">
+      <div className="flex flex-row justify-center w-full">
         <h3 className="basis-1/3 text-lg mx-4 self-center font-bold ">
           {label}
         </h3>
@@ -49,7 +49,6 @@ function QRCodeBatchInput({
               // setPageNumber(pageNumber + 1)
             } else if (e.key == "Enter" && value && submitOverride == true) {
               if (setReadComplete !== undefined) {
-                console.log("in here, read complete");
                 setReadComplete(true);
               }
               if (resetQRString) {
