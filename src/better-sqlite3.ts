@@ -228,6 +228,10 @@ export function getSinglePCBTestDate(pcbSerial: string): string | null{
   }
   
   const result = rows[0] as UnitDetails & { timestamp: string }; // timestamp is saved separetely when data is written to the db
+  
+  if (result.result == 'fail'){
+    return null
+  }
 
   return result.timestamp
 

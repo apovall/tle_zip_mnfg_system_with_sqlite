@@ -1,11 +1,5 @@
-import { useEffect } from "react";
-import { FaTimes, FaCheck, FaMinus } from "react-icons/fa";
+function DispenserDetailDisplay({fills}: {serial: string | null, fills: number | null}) {
 
-function DispenserDetailDisplay({serial, fills}: {serial: string | null, fills: number | null}) {
-
-  let displayedFillsStyling = "text-acceptable-green" //cancel
-  let displayedFills
-  let icon = <FaMinus size={25} className="text-zip-dark"/>
   let fillIcons = []
 
   for (let i = 1; i < 5; i++){
@@ -38,9 +32,7 @@ function DispenserDetailDisplay({serial, fills}: {serial: string | null, fills: 
             <div  className="flex flex-row justify-center" key="icons-display">
             {fillIcons.map((icon, index) => {
               return (
-                <>
-                  <span key={`fill-icon-${index}`}>{icon}</span>
-                </>
+                <span key={`fill-icon-${index}`}>{icon}</span>
                 )
               })}
             </div>

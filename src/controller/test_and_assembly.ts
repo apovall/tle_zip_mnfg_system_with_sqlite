@@ -8,7 +8,7 @@ export function unitCanBeAssembled(pcbSerial: string): [boolean, string] {
   const timestamp = getSinglePCBTestDate(pcbSerial);
 
   if (timestamp == null) {
-    return [false, "Unit serial not found in database. Please test unit."]
+    return [false, "Unit not found in database or has failed its last test. Please test unit."]
   }
   
   const unitTestDatetime = parseDatetimeString(timestamp);
