@@ -24,7 +24,8 @@ export const SystemContextProvider:FC<SystemProviderProps> = ({children}) => {
     | "assemble" 
     | "resistor_check" 
     | "fill_dispeners" 
-    | "box_shipping">("select")
+    | "6_pack"
+    | "72_pack">("select")
   const [isConnected, setIsConnected] = useState(false)
 
   const serial = useRef(new BrowserSerial())

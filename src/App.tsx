@@ -43,7 +43,12 @@ function App() {
         <DispenserFillingWrapper />
       )
       break;
-    case "box_shipping":
+    case "6_pack":
+      componentBlock = (
+        <TestingWrapper />
+      )
+      break;
+    case "72_pack":
       componentBlock = (
         <TestingWrapper />
       )

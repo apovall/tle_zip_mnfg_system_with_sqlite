@@ -6,7 +6,7 @@ function ActionSelector({
   text,
   disabled = false,
 }: {
-  type: "test" | "assemble" | "resistor_check" | "fill_dispeners" | "box_shipping";
+  type: "test" | "assemble" | "resistor_check" | "fill_dispeners" | "box_shipping" | "6_pack" | "72_pack";
   text: string;
   disabled?: boolean;
 }) {
