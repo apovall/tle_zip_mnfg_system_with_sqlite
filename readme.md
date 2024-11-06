@@ -44,11 +44,8 @@ System was developed on Mac ARM64
 If you can't read serial comms when the tester is plugged in, it's most likely being denied access by the system itself.
 - Ensure the port and user are added to the correct dailout group
 
-
-## Changes
-- Packsize is removed from dispenser refilling
-- Packserial is renamed to jobNumber
-- When assembling units - check whether the dispenser value is still being incremented or not. It should now be:
- - Not incremted by the assembly worklow
- - It should be incremented by the filling workflow
- - Need to ensure that all tables that are affected by this change are updated
+# Known Issues / Points for Discussion
+## Dispenser Filling
+- Each time a new dispenser ID is scanned, it is saved to the database (Serial# + Job ID). This is done so that data is at no point lost (given that a few hundred units will be scanned at any give time). It also means a job can be closed, reopened and continued on with at a later stage (does require the job ID to match exactly including case).
+- - The issue with this is that it's not possible to _change_ the job name once a job has been started, as it would require reassinging all of the dispenser IDs. Including this feature is doable, it's just do we want to enable that functionality?
+- Currently if navigating back to the Job Number screen and changing the job number - it won't update the job number for all of the existing dispensers scanned and it won't clear the list of scanned dispensers either. Should it do this?

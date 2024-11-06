@@ -1,13 +1,10 @@
-import { useState, useContext, useEffect, useRef } from "react";
+import { useState, useContext, useEffect } from "react";
 import { SystemContext } from "../../context/SystemContext";
 import NextButton from "../../components/shared/NextButton";
 import CancelJobGeneric from "../../components/shared/CancelJobGeneric";
-import PackScanning from "../Shipping/PackScanning";
 import BackButton from "../../components/shared/BackButton";
 import DispenserScanning from "./DispenserScanning";
 import TextInput from "../../components/shared/TextInput";
-import CompletePackingButton from "../Shipping/CompletePackingButton";
-import GoToFillingsSerials from "./GoToFillingsSerials";
 import FillingScanning from "./FillingScanning";
 
 import { FillingJobDetails } from "../../types/interfaces";
@@ -17,12 +14,23 @@ function DispenserFillingWrapper() {
   let componentBlock;
   const { pageNumber, setPageNumber } = useContext(SystemContext);
   
-
-
   const [qrCode, setQRCode] = useState<string>("");
   const [fillingSerial, setFillingSerial] = useState<string>("");
   const [readComplete, setReadComplete] = useState<boolean>(false);
-  const [jobDetails, setJobDetails] = useState<FillingJobDetails>({jobNumber: ""}); //TODO: Turn into just a string
+  const [jobDetails, setJobDetails] = useState<FillingJobDetails>({jobNumber: ""});
+  const [dispenserSerials, setDispenserialSerials] = useState<Set<string>>(new Set());
+  const [fillingSerials, setFillingSerials] = useState<Set<string>>(new Set());
+
+  const handleComplete = () => {
+    // Handle data reset and navigation
+    setDispenserialSerials(new Set())
+    setJobDetails({jobNumber: ""})
+    setPageNumber(5);
+  }
+  
+  useEffect(() => {
+    console.log(jobDetails["jobNumber"])
+  }, [jobDetails])
 
   switch (pageNumber) {
     case 5:
@@ -60,6 +68,8 @@ function DispenserFillingWrapper() {
               qrCode={qrCode}
               setReadComplete={setReadComplete} 
               readComplete={readComplete}
+              scannedSerials={dispenserSerials}
+              setScannedSerials={setDispenserialSerials}
             />
           </div>
           <div className="flex flex-row justify-between">
@@ -80,6 +90,8 @@ function DispenserFillingWrapper() {
               fillingSerial={fillingSerial}
               setReadComplete={setReadComplete}
               readComplete={readComplete}
+              scannedSerials={fillingSerials}
+              setScannedSerials={setFillingSerials}
             />
           </div>
           <div className="flex flex-row justify-between">
@@ -96,10 +108,9 @@ function DispenserFillingWrapper() {
         // setJobDetails({jobNumber: ""})
         componentBlock = (
           <>
-            <JobComplete />
+            <JobComplete handleComplete={handleComplete}/>
           </>
         )
-
     default:
       break;
   }

@@ -1,15 +1,9 @@
-import { useEffect, useContext, useState } from "react";
+import { useEffect, useState } from "react";
 import { FaThumbsUp, FaSpinner } from "react-icons/fa";
 import GenericButton from "../../components/shared/GenericButton";
-import { SystemContext } from "../../context/SystemContext";
 
-function JobComplete() {
-  const systemContext = useContext(SystemContext);
-  const [thinking, setThinking] = useState<boolean>(true);
-
-  const handleNavigate = () => {
-    systemContext.setPageNumber(5);
-  };
+function JobComplete({handleComplete}: {handleComplete: () => void}) {
+  const [processing, setProcessing] = useState<boolean>(true);
 
   useEffect(() => {
     const playAnimation = () => {
@@ -19,16 +13,16 @@ function JobComplete() {
       }, 2500);
     };
 
-    if (!thinking) {
-      setThinking(false)
+    if (!processing) {
+      setProcessing(false)
       playAnimation();
     }
-  }, [thinking]);
+  }, [processing]);
 
   useEffect(() => {
     const stopThinking = () => {
       setTimeout(() => {
-        setThinking(false);
+        setProcessing(false);
       }, 1000)
     }
     stopThinking();
@@ -36,7 +30,7 @@ function JobComplete() {
 
   return (
     <div className="w-full h-screen ">
-      {thinking ? (
+      {processing ? (
         <div className="flex flex-col justify-center items-center h-full">
           <FaSpinner className="animate-spin text-5xl text-zip-dark" />
         </div>
@@ -49,7 +43,7 @@ function JobComplete() {
           <GenericButton
             text="Return to Main Menu"
             isDisabled={false}
-            onClickFunction={handleNavigate}
+            onClickFunction={handleComplete}
           />
         </div>
       )}

@@ -6,11 +6,13 @@ import { createDispenserFillingEntry, removeDispenserFillingEntry } from "../../
 import DispenserDetailDisplay from "./DispenserDetailDisplay";
 
 interface DispenserScanningProps {
-  jobDetails: FillingJobDetails
-  setQRCode: Dispatch<SetStateAction<string>>
+  jobDetails: FillingJobDetails;
+  setQRCode: Dispatch<SetStateAction<string>>;
   qrCode: string;
-  setReadComplete: Dispatch<SetStateAction<boolean>>
-  readComplete: boolean
+  setReadComplete: Dispatch<SetStateAction<boolean>>;
+  readComplete: boolean;
+  scannedSerials: Set<string>;
+  setScannedSerials: Dispatch<SetStateAction<Set<string>>>;
 }
 
 function DispenserScanning({
@@ -18,7 +20,9 @@ function DispenserScanning({
   setQRCode, 
   qrCode, 
   setReadComplete, 
-  readComplete
+  readComplete,
+  scannedSerials,
+  setScannedSerials
 }: DispenserScanningProps) {
 
   const focus = useRef<HTMLInputElement>(null)
@@ -26,7 +30,7 @@ function DispenserScanning({
   const [displayedQR, setDisplayedQR] = useState<string | null>(null)
   const [nextDisabled, setNextDisabled] = useState<boolean>(true)
   const [errorStyling, setErrorStyling] = useState<string>("opacity-0")
-  const [scannedSerials, setScannedSerials] = useState<Set<string>>(new Set());
+  // const [scannedSerials, setScannedSerials] = useState<Set<string>>(new Set());
 
   const handleEnter = (e: React.ChangeEvent<HTMLInputElement> & React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key == "Enter" && e.target.value) {
@@ -81,10 +85,15 @@ function DispenserScanning({
   }, [displayedQR])
 
   useEffect(() => {
+    console.log('in here', scannedSerials)
     if (scannedSerials.size == 0){
       setNextDisabled(true)
+    } else {
+      setNextDisabled(false)
     }
   }, [scannedSerials])
+
+
 
   return (
     <div className="w-full mx-auto">
@@ -109,10 +118,7 @@ function DispenserScanning({
         <NextButton 
           text="Assign Filling Serial Numbers"
           isDisabled={nextDisabled}
-          // pageOverride
-          // marginOverride
         />
-
       </div>
     </div>
   )

@@ -12,6 +12,8 @@ interface FillingScanningProps {
   fillingSerial: string;
   setReadComplete: Dispatch<SetStateAction<boolean>>
   readComplete: boolean
+  scannedSerials: Set<string>;
+  setScannedSerials: Dispatch<SetStateAction<Set<string>>>;
 }
 
 function FillingScanning({
@@ -19,7 +21,9 @@ function FillingScanning({
   setFillingSerial,
   fillingSerial,
   setReadComplete,
-  readComplete
+  readComplete,
+  scannedSerials,
+  setScannedSerials
 }: FillingScanningProps) {
 
   const focus = useRef<HTMLInputElement>(null);
@@ -29,7 +33,7 @@ function FillingScanning({
   const [displayedSerial, setDisplayedSerial] = useState<string | null>(null)
   const [saveDisabled, setSaveDisabled] = useState<boolean>(true)
   const [errorStyling, setErrorStyling] = useState<string>("opacity-0")
-  const [scannedSerials, setScannedSerials] = useState<Set<string>>(new Set());
+  // const [scannedSerials, setScannedSerials] = useState<Set<string>>(new Set());
 
   const handleEnter = (e: React.ChangeEvent<HTMLInputElement> & React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key == "Enter" && e.target.value) {2
@@ -77,6 +81,14 @@ function FillingScanning({
       })
     }
   }, [displayedSerial])
+
+  useEffect(() => {
+    if (scannedSerials.size == 0){
+      setSaveDisabled(true)
+    } else {
+      setSaveDisabled(false)
+    }
+  },[scannedSerials])
 
   return (
     <div className="w-full mx-auto">
