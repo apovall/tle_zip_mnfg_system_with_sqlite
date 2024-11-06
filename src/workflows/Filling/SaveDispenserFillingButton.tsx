@@ -23,7 +23,6 @@ function SaveDispenserFillingButton({
       disabled={isDisabled}
       onClick={() =>{
         handleSave()
-        console.log("Saved?")
       }}
     >
       {text}

@@ -5,13 +5,15 @@ interface UnitInputProps {
   label: string;
   handleInputChange: React.ChangeEventHandler<HTMLInputElement>;
   handleEnter: React.KeyboardEventHandler<HTMLInputElement>;
-  qrCode: string
+  value: string
   focus?: React.RefObject<HTMLInputElement>
 }
 
-function QRCodeInputSimple({label, handleInputChange,
+function QRCodeInputSimple({
+  label, 
+  handleInputChange,
   handleEnter,
-  qrCode,
+  value,
   focus,}:UnitInputProps) {
 
   return (
@@ -24,7 +26,7 @@ function QRCodeInputSimple({label, handleInputChange,
           onChange={handleInputChange}
           onKeyUp={handleEnter}
           autoFocus={true}
-          value={qrCode}
+          value={value}
           ref={focus}/>
       </div>
     </div>

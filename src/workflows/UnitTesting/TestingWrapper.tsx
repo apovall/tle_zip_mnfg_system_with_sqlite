@@ -183,7 +183,7 @@ function TestingWrapper() {
             autoFocus={true}
           />
           <TextInput
-            label="Batch Name / Number"
+            label="Batch Name / Job Number"
             setInputValues={setUnitDetails}
             target="batchNumber"
             value={unitDetails["batchNumber"]}

@@ -113,7 +113,7 @@ function AssemblyWrapper() {
         <>
         <div className="w-1/2 mx-auto">
           <QRCodeBatchInput
-            label="Assembly Batch Number"
+            label="Assembly Job Number"
             setQRString={setBatchNumber}
             target="qrCode"
             value={batchNumber}
@@ -166,7 +166,7 @@ function AssemblyWrapper() {
   }, [readComplete]);
 
   return (
-    <div className="w-full h-screen flex flex-col justify-end">
+    <div className="w-full h-screen flex flex-col justify-center">
       {componentBlock}
     </div>
   );

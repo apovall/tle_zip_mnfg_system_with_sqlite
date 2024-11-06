@@ -123,13 +123,13 @@ function UnitScanning({
       </div>
 
       <div className="mx-auto">
-          <QRCodeInputSimple 
-            label="Scan or enter serial (enter to submit)"
-            handleInputChange={handleInputChange}
-            handleEnter={handleEnter}
-            qrCode={qrCode}
-            focus={focus} 
-          />
+        <QRCodeInputSimple 
+          label="Scan or enter serial (enter to submit)"
+          handleInputChange={handleInputChange}
+          handleEnter={handleEnter}
+          qrCode={qrCode}
+          focus={focus} 
+        />
       </div>
     </div>
   );

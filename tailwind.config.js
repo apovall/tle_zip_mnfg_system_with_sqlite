@@ -17,6 +17,7 @@ export default {
       "lime": "#E9EC49",
       "acceptable-green": "#35B942",
       "black": "#000000",
+      "table-highlight": "#F5F5F5",
 
     },
     extend: {

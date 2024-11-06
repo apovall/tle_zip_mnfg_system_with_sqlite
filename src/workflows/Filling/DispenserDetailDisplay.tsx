@@ -1,88 +1,48 @@
-import { useEffect } from "react";
-import { FaTimes, FaCheck, FaMinus } from "react-icons/fa";
+import { useEffect, useRef } from "react";
+import { FaTimes, FaCheck } from "react-icons/fa";
 
-function DispenserDetailDisplay({serial, fills}: {serial: string | null, fills: number | null}) {
+interface DispenserDetailDisplayProps {
+  serials: Set<string>;
+  deleteEntry: (dispenserSerial:string) => void;
+  unitType?:string;
+}
 
-  let displayedFillsStyling = "text-acceptable-green" //cancel
-  let displayedFills
-  let icon = <FaMinus size={25} className="text-zip-dark"/>
-  let fillIcons = []
+function DispenserDetailDisplay({
+  serials, 
+  deleteEntry, 
+  unitType = "" }: DispenserDetailDisplayProps) {
 
-  if (!fills){
-    displayedFills = !serial ? '-' : '0 + 1 (new)'
-    displayedFillsStyling = !serial ? "text-main" : 'text-acceptable-green'
-    icon = !serial ? <FaMinus size={25} className="text-zip-dark"/> : <FaCheck size={25} className="text-acceptable-green" />
-  } else if (fills <= 4){
-    displayedFills = `${fills} + 1 (new)`
-    icon = <FaCheck size={40} className="text-acceptable-green" />
-  } else {
-    displayedFillsStyling = "text-cancel"
-    displayedFills = `${fills} + 1 (new)`
-    icon = <FaTimes size={40} className="text-cancel" />
-  }
+  const scrollRef = useRef<HTMLDivElement>(null)
 
-  if (serial == "Invalid serial number"){
-    displayedFillsStyling = "text-cancel"
-    displayedFills = "-"
-    icon = <FaTimes size={40} className="text-cancel" />
-  }
-
-  for (let i = 0; i < 4; i++){
-    let styling = 'w-[49px] h-[49px] border border-black rounded-md text-black flex flex-col justify-center text-center mx-1'
-
-    if (fills || fills == 0){
-      if (i < fills && fills != 0){
-        styling += " bg-[#555555]"
-      } else {
-        styling += " bg-white"
-      }
+  useEffect(() => {
+    if (scrollRef.current){
+      scrollRef.current.scrollTop = scrollRef.current.scrollHeight
     }
-    fillIcons.push(
-      <p className={`${styling}`}>
-        {i + 1}
-      </p>
-    )
-  }
+  }, [serials])
 
   return (
     <>
-      <div className="flex flex-row justify-center my-8">
-        <div className="basis-1/3 text-right">
-          <h3 className='font-bold text-lg mx-4'>Dispenser Serial </h3>
-          <h3 className='font-bold text-lg mx-4'>Fills </h3>
-        </div>
-        <div className="basis-1/3 border-r-2 border-medium-gray text-right pr-8 text-lg">
-          <p className={`basis-2/3 ${displayedFillsStyling} font-bold`}>{!serial ? "-" : serial }</p>
-          <p className={`basis-2/3 ${displayedFillsStyling}`}>{displayedFills}</p>
-        </div>
-        <div className="basis-1/3 pl-8 flex flex-col justify-center">
-          <span className="text-3xl">{icon}</span>
-        </div>
-      </div>
-      
-      <div className="flex flex-row justify-start my-8">
-        <div className="basis-1/3 text-right">
-          <p>Remember to record the</p>
-          <p>refill number on the</p>
-          <p>dispenser body</p>
-        </div>
-        <div className="basis-2/3 pl-8 font-roboto text-center text-3xl flex flex-row justify-start ">
-        {fills !== null && 
-          <div>
-            <p className="mb-2" >Refill No.</p>
-            <div  className="flex flex-row justify-center" key="icons-display">
-            {fillIcons.map((icon, index) => {
-              return (
-                <>
-                  <span key={`fill-icon-${index}`}>{icon}</span>
-                </>
-                )
-              })}
+      <div ref={scrollRef} className="w-1/2 overflow-y-scroll h-[400px] mx-auto mt-8 border-l border-disabled">
+        {Array.from(serials).map((serial, index) => {
+          let additionalStyling = index % 2 == 0 ? " bg-table-highlight " : ""
+          additionalStyling +=  index == serials.size - 1 ? " border-b-2 font-bold " : ""
+          return (
+            <div key={`dispenser-position-${index}`} className={`flex flex-row justify-between items-center m-2 ${additionalStyling}`}>
+              <p className="text-xl font-medium">{unitType} {index + 1}:</p>
+              <p className="text-xl text-left basis-1/3">{serial}</p>
+              <FaCheck className="text-acceptable-green" size={25}/>
+              <button 
+                className="text-cancel text-right font-normal hover:font-bold transition-all basis-1/4" 
+                onClick={() => {
+                deleteEntry(serial)
+                }}>
+                  remove
+              </button>
             </div>
-          </div>
-        }
-        </div>
+          )
+        })}
       </div>
+    
     </>
   )
 }

@@ -7,7 +7,6 @@ interface DispenserResultsDetails {
   jobNumber: string,
   dispenser_serial: string,
   filling_serials: string[] | null,
-  times_filled: number | null,
   timestamp: string | null
 }
 
@@ -58,7 +57,6 @@ const tableSchema = {
       job_number TEXT,
       dispenser_serial TEXT,
       filling_serials TEXT,
-      times_filled INTEGER,
       timestamp TEXT
     );
   `
@@ -238,7 +236,7 @@ export function getSinglePCBTestDate(pcbSerial: string): string | null{
 }
 
 export function readDispenserFillingDetails(jobNumber: string, dispenserSerial: string, ): DispenserResults {
-  const query = `SELECT * FROM zip_dispenser_filling WHERE dispenser_serial = ? ORDER BY times_filled DESC LIMIT 1`;
+  const query = `SELECT * FROM zip_dispenser_filling WHERE dispenser_serial = ? DESC LIMIT 1`;
   const selectStatement = database.prepare(query);
   let rows = selectStatement.all(dispenserSerial);
   console.log('here', rows)
@@ -249,47 +247,61 @@ export function readDispenserFillingDetails(jobNumber: string, dispenserSerial: 
     jobNumber: jobNumber,
     dispenser_serial: dispenserSerial,
     filling_serials: null,
-    times_filled: 0,
     timestamp: null
   }
-
-  // const stmt = database.prepare(`
-  //   INSERT INTO zip_dispenser_filling (
-  //     job_number,
-  //     dispenser_serial,
-  //     times_filled
-  //   ) VALUES (?, ?, ?)`)
-  // try {
-  //   const result = stmt.run(
-  //     jobNumber,
-  //     dispenserSerial, 
-  //     0
-  //   );
-  //   console.log("zip_dispenser_filling saving ==>", result);
-  //   return {
-  //     jobNumber: jobNumber,
-  //     dispenser_serial: dispenserSerial,
-  //     filling_serials: null,
-  //     times_filled: 0,
-  //     timestamp: null
-  //   }
-  // } catch (error) {
-  //   console.error("Error inserting into zip_dispenser_filling:", error);
-  //   return error as Error
-  // }
 }
 
-export function createDispenserFillingEntry(jobNumber: string, dispenserSerial: string, timesFilled: number): void {
+export function createDispenserFillingEntry(jobNumber: string, dispenserSerial: string): void {
   const stmt = database.prepare(`
     INSERT INTO zip_dispenser_filling (
       job_number,
-      dispenser_serial,
-      times_filled
-    ) VALUES (?, ?, ?)`);
+      dispenser_serial
+    ) VALUES (?, ?)`);
   const result = stmt.run(
     jobNumber,
     dispenserSerial,
-    timesFilled
   );
   console.log("zip_dispenser_filling saving ==>", result);
+}
+
+export function removeDispenserFillingEntry(jobNumber: string, dispenserSerial: string): void {
+  const stmt = database.prepare(`
+    DELETE FROM zip_dispenser_filling WHERE job_number = ? AND dispenser_serial = ?`);
+  const result = stmt.run(
+    jobNumber,
+    dispenserSerial,
+  );
+  console.log("zip_dispenser_filling deleting ==>", result);
+}
+
+
+export function assignFillingSerialsToDispensers(jobNumber: string, fillingSerials: Set<string>): boolean {
+  const query = `SELECT * FROM zip_dispenser_filling WHERE job_number = ?`;
+  const selectStatement = database.prepare(query);
+  const rows = selectStatement.all(jobNumber) as DispenserResultsDetails[];
+
+  if (rows.length === 0) {
+    return false;
+  }
+
+  const updateStmt = database.prepare(`
+    UPDATE zip_dispenser_filling 
+    SET filling_serials = ?,
+        timestamp = ?
+    WHERE job_number = ? AND dispenser_serial = ?
+  `);
+
+  const serialsArray = Array.from(fillingSerials);
+  const timestamp = new Date().toLocaleString('en-NZ', { timeZone: 'Pacific/Auckland', hour12: false });
+
+  rows.forEach(row => {
+    updateStmt.run(
+      JSON.stringify(serialsArray),
+      timestamp,
+      jobNumber,
+      row.dispenser_serial
+    );
+  });
+
+  return true
 }
