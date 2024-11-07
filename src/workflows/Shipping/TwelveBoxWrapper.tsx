@@ -11,7 +11,7 @@ import GenericButton from "../../components/shared/GenericButton";
 function SixPackWrapper() {
   const { pageNumber, setPageNumber } = useContext(SystemContext);
 
-  const packSize = 6;
+  const packSize = 12;
   let componentBlock;
   const [ qrCode, setQRCode ] = useState<string>("");
   const [ shippingSerial, setShippingSerial ] = useState<string>("");
@@ -20,35 +20,11 @@ function SixPackWrapper() {
   const [ errorStyling, setErrorStyling ] = useState<string>("opacity-0")
   const [ errorMsg, setErrorMsg ] = useState<string>("")
   const [ successMsg, setSuccessMsg ] = useState<string>("")
-  const [ shippingLabelError, setShippingLabelError ] = useState<string>("opacity-0")
   
   const focus = useRef<HTMLInputElement>(null)
 
-  const isCorrectShippingType = (serial: string) => {
-    const regex = /^[A-B]6-\d{7}$/
-    if (regex.test(serial) && ((serial[0] == "A" && dispenserType == "Zero") || (serial[0] == "B" && dispenserType == "Lure"))){
-      return true
-    }  
-    return false
-  }
-
-  const handleShippingEnter = (e: React.ChangeEvent<HTMLInputElement> & React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key == "Enter" && e.target.value) {
-      console.log("isCorrectShippingType(shippingSerial)", isCorrectShippingType(shippingSerial)); 
-      if (isCorrectShippingType(shippingSerial)){
-        setShippingLabelError("opacity-0")
-      } else {
-        setShippingLabelError("opacity-100")
-        setShippingSerial("")
-        return
-      }
-    }
-  }
-
   const isCorrectDispenserType = (serial: string, dispenserType: string) => {
     const regex = /^[A-B][0-9]{7}$/
-
-    console.log(dispenserSerial, serial, dispenserSerial.has(serial));
 
     if (dispenserSerial.has(serial)){
       setErrorStyling("opacity-100")
@@ -81,7 +57,6 @@ function SixPackWrapper() {
 
   const handleDispenserEnter = (e: React.ChangeEvent<HTMLInputElement> & React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key == "Enter" && e.target.value) {
-      console.log(1);
       if (isCorrectDispenserType(qrCode, dispenserType)){
         setDispenserSerial((prev) => {
           let updatedSerials = new Set(prev)
@@ -127,7 +102,6 @@ function SixPackWrapper() {
     setShippingSerial("")
     setErrorMsg("")
     setDispenserSerial(new Set())
-    setShippingLabelError("opacity-0")
   }
 
   switch (pageNumber) {
@@ -139,11 +113,10 @@ function SixPackWrapper() {
           <QRCodeInputSimple 
             label="Scan or enter dispenser serial"
             handleInputChange={handleShippingChange}
-            handleEnter={handleShippingEnter}
+            handleEnter={() => {}}
             value={shippingSerial}
             focus={focus} 
           />
-          <p className={`text-cancel text-lg text-center py-4 font-semibold ${shippingLabelError}`}>Invalid serial or mismatch with selected dispenser type</p>
           <div className="w-1/2 text-right mx-auto my-4 self-center">
             <div className="flex flex-row justify-center">
               <h3 className='basis-1/3 text-lg mx-4 self-center font-bold '>Unit Type</h3>
@@ -161,7 +134,7 @@ function SixPackWrapper() {
         </div>
           <NextButton
             text="Next"
-            isDisabled={shippingSerial == null || shippingSerial.length < 1 || isCorrectShippingType(shippingSerial) == false}
+            isDisabled={shippingSerial == null || shippingSerial.length < 1 }
           />
           <CancelJobGeneric text="Cancel Job" />
         </>
