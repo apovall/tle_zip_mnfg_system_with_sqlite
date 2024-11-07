@@ -7,6 +7,7 @@ import DispenserFillingWrapper from "./workflows/Filling/DispenserFillingWrapper
 import S3FileUpload from "./helpers/S3FileUpload";
 
 import "./App.css";
+import SixPackWrapper from "./workflows/Shipping/SixPackWrapper";
 
 function App() {
   const systemContext = useContext(SystemContext);
@@ -16,7 +17,7 @@ function App() {
     case "select":
       componentBlock = (
         <>
-          <h1 className="text-center text-3xl my-16 pt-[120px]">
+          <h1 className="text-center text-3xl mb-16 pt-[120px]">
             What would you like to do?
           </h1>
           <JobSelectorWrapper />
@@ -45,7 +46,7 @@ function App() {
       break;
     case "6_pack":
       componentBlock = (
-        <TestingWrapper />
+        <SixPackWrapper />
       )
       break;
     case "72_pack":
@@ -59,13 +60,12 @@ function App() {
   }
 
   return (
-    <div className="w-full font-jost">
+    <div className="w-full font-jost overflow-hidden">
       <div className="">
-        <div className="absolute top-0">
+
           <img className="" src={`${process.env.NODE_ENV === 'production' ? './images/zip_banner.png' : '/images/zip_banner.png'}`} alt="ZIP Banner" />
           {systemContext.activeJob == "select" && <S3FileUpload />}
-        </div>
-        
+
         {componentBlock}
       </div>
     </div>

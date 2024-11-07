@@ -166,7 +166,7 @@ function AssemblyWrapper() {
   }, [readComplete]);
 
   return (
-    <div className="w-full h-screen flex flex-col justify-center">
+    <div className="w-full mt-16 flex flex-col justify-center">
       {componentBlock}
     </div>
   );

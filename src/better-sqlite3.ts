@@ -59,6 +59,15 @@ const tableSchema = {
       filling_serials TEXT,
       timestamp TEXT
     );
+  `,
+  "zip_6_pack": `
+    CREATE TABLE IF NOT EXISTS zip_6_pack (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    shipping_number TEXT,
+    type TEXT,
+    dispenser_serials TEXT,
+    timestamp TEXT
+    )
   `
 }
 
@@ -84,6 +93,7 @@ export function getSqlite3(filename: string) {
   createTable(tableSchema['zip_h2_manufacturing_test'])
   createTable(tableSchema['zip_h2_assembly'])
   createTable(tableSchema['zip_dispenser_filling'])
+  createTable(tableSchema['zip_6_pack'])
 
   // Check if necessary to add new column to the table specified
   // Doing it this way allows the app to always be kept up to date programatically 
@@ -94,6 +104,10 @@ export function getSqlite3(filename: string) {
   console.log("zip_h2_manufacturing_test table: \n", rows)
   rows = readTable('zip_h2_assembly')
   console.log("zip_h2_assembly table: \n", rows)
+  rows = readTable('zip_dispenser_filling')
+  console.log("zip_dispenser_filling table: \n", rows)
+  rows = readTable('zip_6_pack')
+  console.log("zip_6_pack table: \n", rows)
   // rows = readTable('saveDispenserFillingDetails')
   // console.log("saveDispenserFillingDetails table: \n", rows)
   return database
@@ -274,7 +288,6 @@ export function removeDispenserFillingEntry(jobNumber: string, dispenserSerial: 
   console.log("zip_dispenser_filling deleting ==>", result);
 }
 
-
 export function assignFillingSerialsToDispensers(jobNumber: string, fillingSerials: Set<string>): boolean {
   const query = `SELECT * FROM zip_dispenser_filling WHERE job_number = ?`;
   const selectStatement = database.prepare(query);
@@ -304,4 +317,27 @@ export function assignFillingSerialsToDispensers(jobNumber: string, fillingSeria
   });
 
   return true
+}
+
+export function createSixPackEntry(shippingNumber: string, dispenserSerials: Set<string>, type:string ){
+
+  const serialsToWrite = Array.from(dispenserSerials)
+
+  const stmt = database.prepare(`
+    Insert into zip_6_pack (
+    shipping_number,
+    type,
+    dispenser_serials,
+    timestamp
+    ) VALUES (?, ?, ?, ?)`)
+  const timestamp = new Date().toLocaleString('en-NZ', { timeZone: 'Pacific/Auckland', hour12: false });
+
+  const result = stmt.run(
+    shippingNumber,
+    type,
+    JSON.stringify(serialsToWrite),
+    timestamp
+  );
+
+  console.log("zip_6_pack saving ==>", result)
 }

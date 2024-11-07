@@ -373,7 +373,7 @@ function TestingWrapper() {
   }, []);
 
   return (
-    <div className="w-full h-screen flex flex-col justify-center">
+    <div className="w-full mt-16 flex flex-col justify-center">
       <div className="text-right pb-20 px-4 absolute top-32 right-10">
         <div className="">
           Device Mode:{" "}

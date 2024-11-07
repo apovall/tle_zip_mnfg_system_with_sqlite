@@ -9,7 +9,7 @@ interface UnitDetailsProps {
 function TestFeedbackWrapper({ details }: UnitDetailsProps) {
 
   return (
-    <div className="flex flex-row justify-center text-main pt-16">
+    <div className="flex flex-row justify-center text-main">
       <div className="flex flex-col justify-center basis-1/3">
         <TestParameterFeedback
           text="Battery Contact OK"

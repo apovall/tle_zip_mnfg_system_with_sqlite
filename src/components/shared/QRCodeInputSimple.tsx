@@ -18,7 +18,7 @@ function QRCodeInputSimple({
 
   return (
     <div className='w-1/2 text-right mx-auto my-4 self-center'>
-      <div className='flex flex-row justify-cesnter'>
+      <div className='flex flex-row justify-center'>
         <h3 className='basis-1/3 text-lg mx-4 self-center font-bold '>{label}</h3>
         <input 
           className='basis-2/3 border-2 border-zip-dark rounded-lg p-4 self-center' 
