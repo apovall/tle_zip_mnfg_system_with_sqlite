@@ -8,6 +8,7 @@ import S3FileUpload from "./helpers/S3FileUpload";
 
 import "./App.css";
 import SixPackWrapper from "./workflows/Shipping/SixPackWrapper";
+import TwelveBoxWrapper from "./workflows/Shipping/TwelveBoxWrapper";
 
 function App() {
   const systemContext = useContext(SystemContext);
@@ -49,9 +50,9 @@ function App() {
         <SixPackWrapper />
       )
       break;
-    case "72_pack":
+    case "12_box":
       componentBlock = (
-        <TestingWrapper />
+        <TwelveBoxWrapper />
       )
       break;
   

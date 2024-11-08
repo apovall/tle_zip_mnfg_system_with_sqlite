@@ -68,6 +68,15 @@ const tableSchema = {
     dispenser_serials TEXT,
     timestamp TEXT
     )
+  `,
+  "zip_12_box": `
+    CREATE TABLE IF NOT EXISTS zip_12_box (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    shipping_number TEXT,
+    type TEXT,
+    pack_serials TEXT,
+    timestamp TEXT
+    )
   `
 }
 
@@ -94,6 +103,7 @@ export function getSqlite3(filename: string) {
   createTable(tableSchema['zip_h2_assembly'])
   createTable(tableSchema['zip_dispenser_filling'])
   createTable(tableSchema['zip_6_pack'])
+  createTable(tableSchema['zip_12_box'])
 
   // Check if necessary to add new column to the table specified
   // Doing it this way allows the app to always be kept up to date programatically 
@@ -340,4 +350,27 @@ export function createSixPackEntry(shippingNumber: string, dispenserSerials: Set
   );
 
   console.log("zip_6_pack saving ==>", result)
+}
+
+export function createTwelveBoxEntry(shippingNumber: string, packSerials: Set<string>, type:string ){
+
+  const serialsToWrite = Array.from(packSerials)
+
+  const stmt = database.prepare(`
+    Insert into zip_12_box (
+    shipping_number,
+    type,
+    pack_serials,
+    timestamp
+    ) VALUES (?, ?, ?, ?)`)
+  const timestamp = new Date().toLocaleString('en-NZ', { timeZone: 'Pacific/Auckland', hour12: false });
+
+  const result = stmt.run(
+    shippingNumber,
+    type,
+    JSON.stringify(serialsToWrite),
+    timestamp
+  );
+
+  console.log("zip_12_box saving ==>", result)
 }

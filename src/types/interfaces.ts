@@ -51,8 +51,8 @@ export interface TestParameters {
 }
 
 export interface SystemContextProps {
-  activeJob: "select" | "test" | "assemble" | "resistor_check" | "fill_dispeners" | "6_pack" | "72_pack";
-  setActiveJob: Dispatch<SetStateAction<"select" | "test" | "assemble" | "resistor_check" | "fill_dispeners" | "6_pack" | "72_pack">>
+  activeJob: "select" | "test" | "assemble" | "resistor_check" | "fill_dispeners" | "6_pack" | "12_box";
+  setActiveJob: Dispatch<SetStateAction<"select" | "test" | "assemble" | "resistor_check" | "fill_dispeners" | "6_pack" | "12_box">>
   pageNumber: number;
   setPageNumber: Dispatch<SetStateAction<number>>;
   isConnected: boolean;

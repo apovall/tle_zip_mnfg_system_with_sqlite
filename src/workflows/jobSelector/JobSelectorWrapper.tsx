@@ -11,8 +11,8 @@ function JobSelectorWrapper() {
         <ActionSelector type="fill_dispeners" text='Fill Dispensers'/>
       </div>
       <div className="flex flex-col flex-nowrap justify-between">
-        <ActionSelector type="6_pack" text='Box 6 Pack'/>
-        <ActionSelector type="72_pack" text='Box 72 Pack' disabled/>
+        <ActionSelector type="6_pack" text='Box 6 Dispensers'/>
+        <ActionSelector type="12_box" text='Box 12 Packs'/>
       </div>
     </div>
   )

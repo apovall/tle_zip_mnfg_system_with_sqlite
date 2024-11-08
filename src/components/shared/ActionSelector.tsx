@@ -6,7 +6,7 @@ function ActionSelector({
   text,
   disabled = false,
 }: {
-  type: "test" | "assemble" | "resistor_check" | "fill_dispeners" | "box_shipping" | "6_pack" | "72_pack";
+  type: "test" | "assemble" | "resistor_check" | "fill_dispeners" | "box_shipping" | "6_pack" | "12_box";
   text: string;
   disabled?: boolean;
 }) {
@@ -42,6 +42,9 @@ function ActionSelector({
             systemContext.setPageNumber(5)
           break;
           case '6_pack':
+            systemContext.setPageNumber(1)
+          break;
+          case '12_box':
             systemContext.setPageNumber(1)
           break;
           default:

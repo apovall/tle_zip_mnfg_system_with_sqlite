@@ -1,4 +1,4 @@
-import { useState, useContext, useEffect, useRef, ChangeEvent } from "react";
+import { useState, useContext, useRef, ChangeEvent } from "react";
 import { SystemContext } from "../../context/SystemContext";
 import QRCodeInputSimple from "../../components/shared/QRCodeInputSimple";
 import NextButton from "../../components/shared/NextButton";
@@ -34,7 +34,6 @@ function SixPackWrapper() {
 
   const handleShippingEnter = (e: React.ChangeEvent<HTMLInputElement> & React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key == "Enter" && e.target.value) {
-      console.log("isCorrectShippingType(shippingSerial)", isCorrectShippingType(shippingSerial)); 
       if (isCorrectShippingType(shippingSerial)){
         setShippingLabelError("opacity-0")
       } else {
@@ -146,15 +145,15 @@ function SixPackWrapper() {
           <p className={`text-cancel text-lg text-center py-4 font-semibold ${shippingLabelError}`}>Invalid serial or mismatch with selected dispenser type</p>
           <div className="w-1/2 text-right mx-auto my-4 self-center">
             <div className="flex flex-row justify-center">
-              <h3 className='basis-1/3 text-lg mx-4 self-center font-bold '>Unit Type</h3>
+              <h3 className='basis-1/3 text-lg mx-4 self-center font-bold '>Dispenser Type</h3>
               <select 
                 name="dispenser_type" 
                 id="dispenser_type" 
                 onChange={handleSelect}
                 className="basis-2/3 border-2 border-zip-dark rounded-lg p-4 self-center"
                 >
-                <option value="Lure" selected={dispenserType == "Lure" ? true : false}>H2 Lure</option>
-                <option value="Zero" selected={dispenserType == "Zero" ? true : false}>H2 Zero</option>
+                <option value="Lure" selected={dispenserType == "Lure" ? true : false}>H2 Lure (B)</option>
+                <option value="Zero" selected={dispenserType == "Zero" ? true : false}>H2 Zero (A)</option>
               </select>
             </div>
           </div>
@@ -163,7 +162,7 @@ function SixPackWrapper() {
             text="Next"
             isDisabled={shippingSerial == null || shippingSerial.length < 1 || isCorrectShippingType(shippingSerial) == false}
           />
-          <CancelJobGeneric text="Cancel Job" />
+          <CancelJobGeneric text="Finish Job" />
         </>
       );
       break;
