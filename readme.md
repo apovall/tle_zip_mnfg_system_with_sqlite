@@ -5,6 +5,14 @@
 # How to use
 - The test hardware needs to be named (have a `displayName` property of) `H2-Tester`. The system looks for this name across active comm ports, so its usage is never tied to a specific port.
 
+# New Laptop Setup
+1) Open terminal
+2) `sudo apt-get update`
+3) `sudo apt-get upgrade`
+4) `sudo apt-get nvm`
+5) `nvm install 22.1`
+6) `python -m pip install setuptools`
+
 # Build Process
 ## Mac
 System was developed on Mac ARM64
